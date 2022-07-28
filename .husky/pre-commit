@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx eslint src --ext .js
+npx eslint tests --ext .js
+npm run test
