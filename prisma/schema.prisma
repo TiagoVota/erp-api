@@ -17,11 +17,38 @@ model Health {
   @@map("health")
 }
 
+model Enterprise {
+  id            Int    @id @default(autoincrement())
+  cnpj          String @db.VarChar(14)
+  corporateName String @db.VarChar(80)
+  tradiongName  String @db.VarChar(80)
+  admin         User   @relation(fields: [adminId], references: [id])
+  adminId       Int
+
+  @@map("enterpises")
+}
+
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String @db.VarChar(80)
-  email    String @unique @db.VarChar(80)
-  password String @db.VarChar(80)
+  id          Int          @id @default(autoincrement())
+  cpf         String       @db.VarChar(11)
+  name        String       @db.VarChar(80)
+  email       String       @unique @db.VarChar(80)
+  password    String       @db.VarChar(80)
+  isAdmin     Boolean      @default(false)
+  enterprises Enterprise[]
+  permissions Permission[]
 
   @@map("users")
+}
+
+model Permission {
+  id              Int     @id @default(autoincrement())
+  user            User    @relation(fields: [userId], references: [id])
+  userId          Int
+  seeUsers        Boolean @default(false)
+  addUsers        Boolean @default(false)
+  deleteUsers     Boolean @default(false)
+  editPermissions Boolean @default(false)
+
+  @@map("permissions")
 }
