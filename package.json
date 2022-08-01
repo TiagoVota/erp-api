@@ -13,6 +13,7 @@
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test jest --watch -i",
     "test:coverage": "dotenv -e .env.test npm run test -- -- -- --coverage",
     "git:update": "git add . && git status",
+    "prisma:generate": "npx prisma generate",
     "prisma:view-db": "npx prisma studio",
     "prisma:format": "npx prisma format",
     "prisma:migrate": "npx prisma migrate dev",
