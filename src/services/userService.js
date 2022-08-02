@@ -5,11 +5,32 @@ import { generateToken } from '../utils/authorizations.js'
 import { formatTokenData } from './helpers/formatUserHelper.js'
 
 import {
+	ExistentAdminError,
 	ExistentUserError,
 	InvalidPasswordError,
 	NoUserByIdError,
 	NoUserError,
 } from '../errors/index.js'
+
+
+const createAdmin = async ({ cpf, name, email, password }) => {
+	await validateExistentAdmin()
+	await validateExistentUser(email)
+
+	// TODO: formatar cpf
+
+	const hashPassword = encryptValue(password)
+
+	const admin = await insertUser({
+		cpf,
+		name,
+		email: email.toLowerCase(),
+		password: hashPassword,
+		isAdmin: true,
+	})
+	
+	return admin
+}
 
 
 const createUser = async ({ name, email, password }) => {
@@ -38,6 +59,13 @@ const AuthorizeUser = async ({ email, password }) => {
 	return { token }
 }
 
+
+const validateExistentAdmin = async () => {
+	const existentAdmin = await userRepository.findAdmin()
+	if (existentAdmin) throw new ExistentAdminError()
+
+	return existentAdmin
+}
 
 const validateExistentUser = async (email) => {
 	const existentUserEmail = await userRepository.findByEmail(email)
@@ -70,6 +98,7 @@ const validateUserById = async (userId) => {
 
 
 export {
+	createAdmin,
 	createUser,
 	AuthorizeUser,
 	validateUserById,

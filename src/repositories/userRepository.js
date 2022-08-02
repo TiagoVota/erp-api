@@ -1,6 +1,17 @@
 import prisma from '../database/database.js'
 
 
+const findAdmin = async () => {
+	const admin = await prisma.user.findUnique({
+		where: {
+			isAdmin: true,
+		},
+	})
+
+	return admin
+}
+
+
 const findByEmail = async (email) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -33,6 +44,7 @@ const insert = async (userData) => {
 
 
 const userRepository = {
+	findAdmin,
 	findByEmail,
 	findById,
 	insert,

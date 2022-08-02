@@ -1,6 +1,20 @@
 import { userService } from '../services/index.js'
 
 
+const signUpAdmin = async (req, res, next) => {
+	const adminData = req.body
+
+	try {
+		const createdUser = await userService.createAdmin(adminData)
+
+		return res.status(201).send(createdUser)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 const signUpUser = async (req, res, next) => {
 	const userData = req.body
 
@@ -30,6 +44,7 @@ const loginUser = async (req, res, next) => {
 
 
 export {
+	signUpAdmin,
 	signUpUser,
 	loginUser,
 }

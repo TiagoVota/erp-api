@@ -18,12 +18,14 @@ model Health {
 }
 
 model Enterprise {
-  id            Int    @id @default(autoincrement())
-  cnpj          String @db.VarChar(14)
-  corporateName String @db.VarChar(80)
-  tradiongName  String @db.VarChar(80)
-  admin         User   @relation(fields: [adminId], references: [id])
+  id            Int      @id @default(autoincrement())
+  cnpj          String   @db.VarChar(14)
+  corporateName String   @db.VarChar(80)
+  tradiongName  String   @db.VarChar(80)
+  admin         User     @relation(fields: [adminId], references: [id])
   adminId       Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("enterpises")
 }
@@ -37,18 +39,22 @@ model User {
   isAdmin     Boolean      @default(false)
   enterprises Enterprise[]
   permissions Permission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("users")
 }
 
 model Permission {
-  id              Int     @id @default(autoincrement())
-  user            User    @relation(fields: [userId], references: [id])
+  id              Int      @id @default(autoincrement())
+  user            User     @relation(fields: [userId], references: [id])
   userId          Int
-  seeUsers        Boolean @default(false)
-  addUsers        Boolean @default(false)
-  deleteUsers     Boolean @default(false)
-  editPermissions Boolean @default(false)
+  seeUsers        Boolean  @default(false)
+  addUsers        Boolean  @default(false)
+  deleteUsers     Boolean  @default(false)
+  editPermissions Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@map("permissions")
 }
