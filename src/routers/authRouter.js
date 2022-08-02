@@ -12,17 +12,12 @@ const authRouter = Router()
 authRouter.post(
 	'/sign-up',
 	schemaValidation.bodyMiddleware(userSchema),
-	authController.signUpUser
-)
-authRouter.post(
-	'/sign-up/admin',
-	schemaValidation.bodyMiddleware(userSchema),
-	authController.signUpAdmin
+	authController.signUpUser,
 )
 authRouter.post(
 	'/login',
 	schemaValidation.bodyMiddleware(loginSchema),
-	authController.loginUser
+	authController.loginUser,
 )
 
 

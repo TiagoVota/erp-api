@@ -6,6 +6,7 @@ import InvalidPasswordError from './InvalidPasswordError.js'
 import NoUserByIdError from './NoUserByIdError.js'
 import NoUserError from './NoUserError.js'
 import SchemaError from './SchemaError.js'
+import UnprocessableCpfError from './UnprocessableCpfError.js'
 
 
 export {
@@ -17,4 +18,5 @@ export {
 	NoUserByIdError,
 	NoUserError,
 	SchemaError,
+	UnprocessableCpfError,
 }

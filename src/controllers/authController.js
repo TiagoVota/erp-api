@@ -5,9 +5,9 @@ const signUpAdmin = async (req, res, next) => {
 	const adminData = req.body
 
 	try {
-		const createdUser = await userService.createAdmin(adminData)
+		const createdAdmin = await userService.createAdmin(adminData)
 
-		return res.status(201).send(createdUser)
+		return res.status(201).send(createdAdmin)
 
 	} catch (error) {
 		next(error)

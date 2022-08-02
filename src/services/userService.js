@@ -1,5 +1,6 @@
 import { userRepository } from '../repositories/index.js'
 
+import { getCpfNumbers, isValidCpf } from '../utils/cpfCnpjValidations.js'
 import { encryptValue, isValidEncrypt } from '../utils/encryptor.js'
 import { generateToken } from '../utils/authorizations.js'
 import { formatTokenData } from './helpers/formatUserHelper.js'
@@ -10,21 +11,20 @@ import {
 	InvalidPasswordError,
 	NoUserByIdError,
 	NoUserError,
+	UnprocessableCpfError,
 } from '../errors/index.js'
 
 
-const createAdmin = async ({ cpf, name, email, password }) => {
+const createAdmin = async (createAdminBody) => {
+	const formattedBody = await formatCreateBodyOrFail(createAdminBody)
+
 	await validateExistentAdmin()
-	await validateExistentUser(email)
+	await validateExistentUser(formattedBody.email)
 
-	// TODO: formatar cpf
-
-	const hashPassword = encryptValue(password)
+	const hashPassword = encryptValue(formattedBody.password)
 
 	const admin = await insertUser({
-		cpf,
-		name,
-		email: email.toLowerCase(),
+		...formattedBody,
 		password: hashPassword,
 		isAdmin: true,
 	})
@@ -59,6 +59,17 @@ const AuthorizeUser = async ({ email, password }) => {
 	return { token }
 }
 
+
+const formatCreateBodyOrFail = async (createUserBody) => {
+	const { cpf, email } = createUserBody
+	if (!isValidCpf(cpf)) throw new UnprocessableCpfError(cpf)
+
+	return {
+		...createUserBody,
+		cpf: getCpfNumbers(cpf),
+		email: email.trim().toLowerCase(),
+	}
+}
 
 const validateExistentAdmin = async () => {
 	const existentAdmin = await userRepository.findAdmin()

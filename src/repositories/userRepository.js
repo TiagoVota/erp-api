@@ -2,7 +2,7 @@ import prisma from '../database/database.js'
 
 
 const findAdmin = async () => {
-	const admin = await prisma.user.findUnique({
+	const admin = await prisma.user.findFirst({
 		where: {
 			isAdmin: true,
 		},
