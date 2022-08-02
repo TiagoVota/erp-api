@@ -4,6 +4,7 @@ import { getCpfNumbers, isValidCpf } from '../utils/cpfCnpjValidations.js'
 import { encryptValue, isValidEncrypt } from '../utils/encryptor.js'
 import { generateToken } from '../utils/authorizations.js'
 import { formatTokenData } from './helpers/formatUserHelper.js'
+import { makeAdminPermissions } from './helpers/adminHelper.js'
 
 import {
 	ExistentAdminError,
@@ -23,13 +24,16 @@ const createAdmin = async (createAdminBody) => {
 
 	const hashPassword = encryptValue(formattedBody.password)
 
-	const admin = await insertUser({
-		...formattedBody,
-		password: hashPassword,
-		isAdmin: true,
-	})
+	const adminInfo = await insertUser(
+		{
+			...formattedBody,
+			password: hashPassword,
+			isAdmin: true,
+		},
+		makeAdminPermissions()
+	)
 	
-	return admin
+	return adminInfo
 }
 
 
@@ -48,7 +52,7 @@ const createUser = async ({ name, email, password }) => {
 }
 
 
-const AuthorizeUser = async ({ email, password }) => {
+const authorizeUser = async ({ email, password }) => {
 	const user = await userRepository.findByEmail(email)
 
 	validateUser(user, email)
@@ -83,11 +87,14 @@ const validateExistentUser = async (email) => {
 	if (existentUserEmail) throw new ExistentUserError(email)
 }
 
-const insertUser = async (userData) => {
-	const user = await userRepository.insert(userData)
+const insertUser = async (userData, permissionsOptions={}) => {
+	const [ user, permissions ] = await userRepository.insertUser(
+		userData,
+		permissionsOptions,
+	)
 	delete user.password
 
-	return user
+	return { user, permissions }
 }
 
 const validateUser = (user, email) => {
@@ -111,6 +118,6 @@ const validateUserById = async (userId) => {
 export {
 	createAdmin,
 	createUser,
-	AuthorizeUser,
+	authorizeUser,
 	validateUserById,
 }

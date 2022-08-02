@@ -33,7 +33,7 @@ const loginUser = async (req, res, next) => {
 	const userData = req.body
 
 	try {
-		const tokenInfo = await userService.AuthorizeUser(userData)
+		const tokenInfo = await userService.authorizeUser(userData)
 
 		return res.status(201).send(tokenInfo)
 
