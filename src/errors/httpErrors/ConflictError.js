@@ -1,8 +1,10 @@
+import { StatusCodes } from 'http-status-codes'
+
 class ConflictError extends Error {
 	constructor(message) {
 		super(message || 'Conflict!')
 		this.name = 'HttpError'
-		this.status = 409
+		this.status = StatusCodes.CONFLICT
 	}
 }
 

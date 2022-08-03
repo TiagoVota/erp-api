@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -18,37 +19,43 @@ model Health {
 }
 
 model Enterprise {
-  id            Int    @id @default(autoincrement())
-  cnpj          String @db.VarChar(14)
-  corporateName String @db.VarChar(80)
-  tradiongName  String @db.VarChar(80)
-  admin         User   @relation(fields: [adminId], references: [id])
-  adminId       Int
+  id            Int      @id @default(autoincrement())
+  cnpj          String   @db.VarChar(14) @unique
+  corporateName String   @db.VarChar(80)
+  tradiongName  String   @db.VarChar(80)
+  admin         User     @relation(fields: [adminId], references: [id])
+  adminId       Int      @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("enterpises")
 }
 
 model User {
   id          Int          @id @default(autoincrement())
-  cpf         String       @db.VarChar(11)
+  cpf         String       @db.VarChar(11) @unique
   name        String       @db.VarChar(80)
-  email       String       @unique @db.VarChar(80)
+  email       String       @db.VarChar(80) @unique
   password    String       @db.VarChar(80)
   isAdmin     Boolean      @default(false)
   enterprises Enterprise[]
   permissions Permission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("users")
 }
 
 model Permission {
-  id              Int     @id @default(autoincrement())
-  user            User    @relation(fields: [userId], references: [id])
-  userId          Int
-  seeUsers        Boolean @default(false)
-  addUsers        Boolean @default(false)
-  deleteUsers     Boolean @default(false)
-  editPermissions Boolean @default(false)
+  id              Int      @id @default(autoincrement())
+  user            User     @relation(fields: [userId], references: [id])
+  userId          Int      @unique
+  seeUsers        Boolean  @default(false)
+  addUsers        Boolean  @default(false)
+  deleteUsers     Boolean  @default(false)
+  editPermissions Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@map("permissions")
 }

@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes'
+
 import { isPersonalizedError } from '../utils/errorsName.js'
 
 
@@ -7,7 +9,9 @@ const errorHandlerMiddleware = (err, req, res, next) => {
 	if (isPersonalizedError(errorName)) return res.status(status).send(message)
 	
 	if (err.name === 'JsonWebTokenError') {
-		return res.status(401).send('Unauthorized, token not valid!')
+		return res
+			.status(StatusCodes.UNAUTHORIZED)
+			.send('Unauthorized, token not valid!')
 	}
 	
 	next(err)

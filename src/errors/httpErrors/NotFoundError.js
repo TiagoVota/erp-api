@@ -1,8 +1,10 @@
+import { StatusCodes } from 'http-status-codes'
+
 class NotFoundError extends Error {
 	constructor(message) {
 		super(message || 'Not found!')
 		this.name = 'HttpError'
-		this.status = 404
+		this.status = StatusCodes.NOT_FOUND
 	}
 }
 
