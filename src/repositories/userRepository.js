@@ -1,6 +1,6 @@
 import prisma from '../database/database.js'
 
-import { permissionRepository } from './permissionRepository.js'
+import { permissionRepository } from './index.js'
 
 
 const findAdmin = async () => {

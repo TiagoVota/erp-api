@@ -13,8 +13,20 @@ const insert = async (userId, permissionsOptions={}) => {
 }
 
 
+const findByUserId = async (userId) => {
+	const permissions = await prisma.permission.findUnique({
+		where: {
+			userId,
+		},
+	})
+
+	return permissions
+}
+
+
 const permissionRepository = {
 	insert,
+	findByUserId,
 }
 export {
 	permissionRepository

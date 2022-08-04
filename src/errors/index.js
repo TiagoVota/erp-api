@@ -2,6 +2,7 @@ import AuthError from './AuthError.js'
 import ExistentAdminError from './ExistentAdminError.js'
 import ExistentUserCpfError from './ExistentUserCpfError.js'
 import ExistentUserEmailError from './ExistentUserEmailError.js'
+import ForbiddenPermissionError from './ForbiddenPermissionError.js'
 import HealthError from './HealthError.js'
 import InvalidPasswordError from './InvalidPasswordError.js'
 import NoUserByIdError from './NoUserByIdError.js'
@@ -15,6 +16,7 @@ export {
 	ExistentAdminError,
 	ExistentUserCpfError,
 	ExistentUserEmailError,
+	ForbiddenPermissionError,
 	HealthError,
 	InvalidPasswordError,
 	NoUserByIdError,

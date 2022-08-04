@@ -1,6 +1,6 @@
 import { verifyToken } from '../utils/authorizations.js'
 
-import { validateUserByIdOrFail } from '../services/userService.js'
+import { userService } from '../services/index.js'
 
 import { AuthError } from '../errors/index.js'
 
@@ -15,7 +15,7 @@ const authMiddleware = async (req, res, next) => {
 		const user = verifyToken(token)
 		if (!user) throw new AuthError()
 
-		const existentUser = await validateUserByIdOrFail(user.id)
+		const existentUser = await userService.validateUserByIdOrFail(user.id)
 		delete existentUser.password
 	
 		res.locals.user = existentUser
