@@ -58,8 +58,8 @@ const createUser = async (createAdminBody) => {
 const authorizeUser = async ({ email, password }) => {
 	const user = await userRepository.findByEmail(email)
 
-	validateUser(user, email)
-	validatePassword(password, user.password)
+	validateUserOrFail(user, email)
+	validatePasswordOrFail(password, user.password)
 
 	const token = generateToken(formatTokenData(user))
 
@@ -110,17 +110,17 @@ const insertUser = async (userData, permissionsOptions={}) => {
 	return { user, permissions }
 }
 
-const validateUser = (user, email) => {
+const validateUserOrFail = (user, email) => {
 	const haveUser = Boolean(user?.id)
 	if (!haveUser) throw new NoUserError(email)
 }
 
-const validatePassword = (password, hashPassword) => {
+const validatePasswordOrFail = (password, hashPassword) => {
 	const isValidPassword = isValidEncrypt(password, hashPassword)
 	if (!isValidPassword) throw new InvalidPasswordError()
 }
 
-const validateUserById = async (userId) => {
+const validateUserByIdOrFail = async (userId) => {
 	const user = await userRepository.findById(userId)
 	if (!user) throw new NoUserByIdError(userId)
 
@@ -132,5 +132,5 @@ export {
 	createAdmin,
 	createUser,
 	authorizeUser,
-	validateUserById,
+	validateUserByIdOrFail,
 }
