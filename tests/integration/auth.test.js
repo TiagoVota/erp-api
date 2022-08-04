@@ -4,15 +4,13 @@ import supertest from 'supertest'
 import app from '../../src/app.js'
 
 import { disconnectServer, truncateUsers } from '../factories/dbFactory.js'
-import { createUser, makeUserBody } from '../factories/userFactory.js'
+import { createUser, makeUserLoginBody } from '../factories/userFactory.js'
 
 describe('POST /auth/login', () => {
 	beforeEach(truncateUsers)
 
 	it('should return UNPROCESSABLE ENTITY invalid body', async () => {
-		const invalidBody = makeUserBody()
-		delete invalidBody.cpf
-		delete invalidBody.name
+		const invalidBody = makeUserLoginBody()
 		delete invalidBody.password
 
 		const response = await supertest(app)

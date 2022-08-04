@@ -17,6 +17,16 @@ const makeUserBody = (defaultBody) => {
 }
 
 
+const makeUserLoginBody = (defaultBody) => {
+	const userLoginBody = {
+		email: defaultBody?.email || faker.internet.email(),
+		password: defaultBody?.password || faker.internet.password(),
+	}
+
+	return userLoginBody
+}
+
+
 const findUserById = async (id) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -43,6 +53,7 @@ const createUser = async (defaultBody) => {
 
 export {
 	makeUserBody,
+	makeUserLoginBody,
 	findUserById,
 	createUser,
 }
