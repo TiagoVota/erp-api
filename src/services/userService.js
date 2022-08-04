@@ -8,7 +8,8 @@ import { makeAdminPermissions } from './helpers/adminHelper.js'
 
 import {
 	ExistentAdminError,
-	ExistentUserError,
+	ExistentUserCpfError,
+	ExistentUserEmailError,
 	InvalidPasswordError,
 	NoUserByIdError,
 	NoUserError,
@@ -19,8 +20,8 @@ import {
 const createAdmin = async (createAdminBody) => {
 	const formattedBody = await formatCreateBodyOrFail(createAdminBody)
 
-	await validateExistentAdmin()
-	await validateExistentUser(formattedBody.email)
+	await validateExistentAdminOrFail()
+	await validateExistentUserOrFail(formattedBody.email, formattedBody.cpf)
 
 	const hashPassword = encryptValue(formattedBody.password)
 
@@ -37,18 +38,20 @@ const createAdmin = async (createAdminBody) => {
 }
 
 
-const createUser = async ({ name, email, password }) => {
-	await validateExistentUser(email)
+const createUser = async (createAdminBody) => {
+	const formattedBody = await formatCreateBodyOrFail(createAdminBody)
 
-	const hashPassword = encryptValue(password)
+	await validateExistentUserOrFail(formattedBody.email, formattedBody.cpf)
 
-	const user = await insertUser({
-		name,
-		email: email.toLowerCase(),
-		password: hashPassword
+	const hashPassword = encryptValue(formattedBody.password)
+
+	const userInfo = await insertUser({
+		...formattedBody,
+		password: hashPassword,
+		isAdmin: true,
 	})
-	
-	return user
+
+	return userInfo
 }
 
 
@@ -75,16 +78,26 @@ const formatCreateBodyOrFail = async (createUserBody) => {
 	}
 }
 
-const validateExistentAdmin = async () => {
+const validateExistentAdminOrFail = async () => {
 	const existentAdmin = await userRepository.findAdmin()
 	if (existentAdmin) throw new ExistentAdminError()
 
 	return existentAdmin
 }
 
-const validateExistentUser = async (email) => {
+const validateExistentUserOrFail = async (email, cpf) => {
+	await validateExistentUserEmailOrFail(email)
+	await validateExistentCpfOrFail(cpf)
+}
+
+const validateExistentUserEmailOrFail = async (email) => {
 	const existentUserEmail = await userRepository.findByEmail(email)
-	if (existentUserEmail) throw new ExistentUserError(email)
+	if (existentUserEmail) throw new ExistentUserEmailError(email)
+}
+
+const validateExistentCpfOrFail = async (cpf) => {
+	const existentUserCpf = await userRepository.findByCpf(cpf)
+	if (existentUserCpf) throw new ExistentUserCpfError(cpf)
 }
 
 const insertUser = async (userData, permissionsOptions={}) => {

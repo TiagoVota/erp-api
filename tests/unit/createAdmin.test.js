@@ -9,7 +9,8 @@ import { makeUserBody } from '../factories/userFactory.js'
 
 import {
 	ExistentAdminError,
-	ExistentUserError,
+	ExistentUserCpfError,
+	ExistentUserEmailError,
 	UnprocessableCpfError,
 } from '../../src/errors/index.js'
 
@@ -37,13 +38,23 @@ describe('userService: createAdmin', () => {
 		await expect(result).rejects.toThrowError(ExistentAdminError)
 	})
 
-	it('should throw ExistentUserError for user with e-mail already created', async () => {
+	it('should throw ExistentUserEmailError for user with e-mail already created', async () => {
 		const body = makeUserBody()
 
 		jest.spyOn(userRepository, 'findByEmail')
 			.mockReturnValue({ email: body.email })
 		
 		const result = sut.createAdmin(body)
-		await expect(result).rejects.toThrowError(ExistentUserError)
+		await expect(result).rejects.toThrowError(ExistentUserEmailError)
+	})
+
+	it('should throw ExistentUserCpfError for user with cpf already created', async () => {
+		const body = makeUserBody()
+
+		jest.spyOn(userRepository, 'findByCpf')
+			.mockReturnValue({ email: body.cpf })
+		
+		const result = sut.createAdmin(body)
+		await expect(result).rejects.toThrowError(ExistentUserCpfError)
 	})
 })

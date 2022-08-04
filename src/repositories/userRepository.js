@@ -25,6 +25,17 @@ const findByEmail = async (email) => {
 }
 
 
+const findByCpf = async (cpf) => {
+	const user = await prisma.user.findUnique({
+		where: {
+			cpf,
+		},
+	})
+
+	return user
+}
+
+
 const findById = async (id) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -64,6 +75,7 @@ const insert = async (userData) => {
 const userRepository = {
 	findAdmin,
 	findByEmail,
+	findByCpf,
 	findById,
 	insertUser,
 }
