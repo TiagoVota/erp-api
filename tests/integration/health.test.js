@@ -23,6 +23,6 @@ describe('GET /health', () => {
 
 
 afterAll(async () => {
-	await disconnectServer()
 	await truncateHealth()
+	await disconnectServer()
 })

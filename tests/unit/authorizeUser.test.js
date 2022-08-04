@@ -6,12 +6,10 @@ import { userService } from '../../src/services/index.js'
 import { userRepository } from '../../src/repositories/index.js'
 
 import { clearMocks } from '../factories/jestUtilsFactory.js'
-import { makeUserBody, makeUserLoginBody } from '../factories/userFactory.js'
+import { makeUserLoginBody } from '../factories/userFactory.js'
 import { generateId } from '../factories/idFactory.js'
 
 import {
-	ExistentUserCpfError,
-	ExistentUserEmailError,
 	InvalidPasswordError,
 	NoUserError,
 } from '../../src/errors/index.js'

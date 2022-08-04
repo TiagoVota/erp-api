@@ -48,7 +48,6 @@ const createUser = async (createAdminBody) => {
 	const userInfo = await insertUser({
 		...formattedBody,
 		password: hashPassword,
-		isAdmin: true,
 	})
 
 	return userInfo

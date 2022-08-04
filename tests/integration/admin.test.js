@@ -53,6 +53,6 @@ describe('POST /admin/auth/sign-up', () => {
 
 
 afterAll(async () => {
-	await disconnectServer()
 	await truncateUsers()
+	await disconnectServer()
 })

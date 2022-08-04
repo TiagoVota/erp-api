@@ -12,6 +12,22 @@ const findPermissionByUserId = async (userId) => {
 }
 
 
+const createUserPermissions = async (userId, ...permissionNames) => {
+	const permissions = {}
+	permissionNames.forEach(key => permissions[key] = true)
+
+	const permission = await prisma.permission.create({
+		data: {
+			userId,
+			...permissions,
+		}
+	})
+
+	return permission
+}
+
+
 export {
 	findPermissionByUserId,
+	createUserPermissions,
 }
