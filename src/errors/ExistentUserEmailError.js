@@ -1,12 +1,12 @@
 import { ConflictError } from './httpErrors/index.js'
 
 
-class ExistentUserError extends ConflictError {
+class ExistentUserEmailError extends ConflictError {
 	constructor(email) {
 		super(`User with e-mail '${email}' already registered!`)
-		this.name = 'ExistentUserError'
+		this.name = 'ExistentUserEmailError'
 	}
 }
 
 
-export default ExistentUserError
+export default ExistentUserEmailError

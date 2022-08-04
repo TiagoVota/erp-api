@@ -1,6 +1,8 @@
 import AuthError from './AuthError.js'
 import ExistentAdminError from './ExistentAdminError.js'
-import ExistentUserError from './ExistentUserError.js'
+import ExistentUserCpfError from './ExistentUserCpfError.js'
+import ExistentUserEmailError from './ExistentUserEmailError.js'
+import ForbiddenPermissionError from './ForbiddenPermissionError.js'
 import HealthError from './HealthError.js'
 import InvalidPasswordError from './InvalidPasswordError.js'
 import NoUserByIdError from './NoUserByIdError.js'
@@ -12,7 +14,9 @@ import UnprocessableCpfError from './UnprocessableCpfError.js'
 export {
 	AuthError,
 	ExistentAdminError,
-	ExistentUserError,
+	ExistentUserCpfError,
+	ExistentUserEmailError,
+	ForbiddenPermissionError,
 	HealthError,
 	InvalidPasswordError,
 	NoUserByIdError,
