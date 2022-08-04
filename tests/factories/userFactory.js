@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 import { faker } from '@faker-js/faker'
 import { cpf } from 'cpf-cnpj-validator'
 
@@ -15,6 +16,7 @@ const makeUserBody = (defaultBody) => {
 	return userBody
 }
 
+
 const findUserById = async (id) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -26,7 +28,21 @@ const findUserById = async (id) => {
 }
 
 
+const createUser = async (defaultBody) => {
+	const userBody = makeUserBody(defaultBody)
+	userBody.email = userBody.email.toLowerCase()
+	userBody.password = bcrypt.hashSync(userBody.password, 12)
+
+	const user = await prisma.user.create({
+		data: userBody,
+	})
+
+	return user
+}
+
+
 export {
 	makeUserBody,
 	findUserById,
+	createUser,
 }

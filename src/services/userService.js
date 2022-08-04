@@ -55,11 +55,9 @@ const createUser = async (createAdminBody) => {
 }
 
 
-const authorizeUser = async ({ email, password }) => {
-	const user = await userRepository.findByEmail(email)
-
-	validateUserOrFail(user, email)
-	validatePasswordOrFail(password, user.password)
+const authorizeUser = async (loginData) => {
+	const user = await validateUserEmailOrFail(loginData.email)
+	validatePasswordOrFail(loginData.password, user.password)
 
 	const token = generateToken(formatTokenData(user))
 
@@ -110,9 +108,14 @@ const insertUser = async (userData, permissionsOptions={}) => {
 	return { user, permissions }
 }
 
-const validateUserOrFail = (user, email) => {
+const validateUserEmailOrFail = async (email) => {
+	const lowerEmail = email.toLowerCase()
+	const user = await userRepository.findByEmail(lowerEmail)
+
 	const haveUser = Boolean(user?.id)
-	if (!haveUser) throw new NoUserError(email)
+	if (!haveUser) throw new NoUserError(lowerEmail)
+
+	return user
 }
 
 const validatePasswordOrFail = (password, hashPassword) => {
