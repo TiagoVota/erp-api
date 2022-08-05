@@ -16,8 +16,14 @@ const truncateUsers = async () => {
 }
 
 
+const truncateEnterprises = async () => {
+	await prisma.$executeRaw`TRUNCATE TABLE enterprises CASCADE;`
+}
+
+
 export {
 	disconnectServer,
 	truncateHealth,
 	truncateUsers,
+	truncateEnterprises,
 }
