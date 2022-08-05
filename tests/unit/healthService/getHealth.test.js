@@ -1,12 +1,12 @@
 import { jest } from '@jest/globals'
 
-import { healthService } from '../../src/services/index.js'
+import { healthService } from '../../../src/services/index.js'
 
-import { healthRepository } from '../../src/repositories/index.js'
+import { healthRepository } from '../../../src/repositories/index.js'
 
-import { clearMocks } from '../factories/jestUtilsFactory.js'
+import { clearMocks } from '../../factories/jestUtilsFactory.js'
 
-import { HealthError } from '../../src/errors/index.js'
+import { HealthError } from '../../../src/errors/index.js'
 
 
 const sut = healthService

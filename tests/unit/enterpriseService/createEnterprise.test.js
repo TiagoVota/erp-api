@@ -1,19 +1,19 @@
 import { jest } from '@jest/globals'
 
-import { enterpriseService } from '../../src/services/index.js'
+import { enterpriseService } from '../../../src/services/index.js'
 
-import { enterpriseRepository } from '../../src/repositories/index.js'
+import { enterpriseRepository } from '../../../src/repositories/index.js'
 
-import { makeEnterpriseBody } from '../factories/enterpriseFactory.js'
-import { clearMocks } from '../factories/jestUtilsFactory.js'
-import { makeUserBody } from '../factories/userFactory.js'
+import { makeEnterpriseBody } from '../../factories/enterpriseFactory.js'
+import { clearMocks } from '../../factories/jestUtilsFactory.js'
+import { makeUserBody } from '../../factories/userFactory.js'
 
 import {
 	ExistentEnterpriseAdminError,
 	ExistentEnterpriseCnpjError,
 	ForbiddenAdminError,
 	UnprocessableCnpjError,
-} from '../../src/errors/index.js'
+} from '../../../src/errors/index.js'
 
 
 const sut = enterpriseService

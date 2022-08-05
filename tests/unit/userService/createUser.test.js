@@ -1,17 +1,17 @@
 import { jest } from '@jest/globals'
 
-import { userService } from '../../src/services/index.js'
+import { userService } from '../../../src/services/index.js'
 
-import { userRepository } from '../../src/repositories/index.js'
+import { userRepository } from '../../../src/repositories/index.js'
 
-import { clearMocks } from '../factories/jestUtilsFactory.js'
-import { makeUserBody } from '../factories/userFactory.js'
+import { clearMocks } from '../../factories/jestUtilsFactory.js'
+import { makeUserBody } from '../../factories/userFactory.js'
 
 import {
 	ExistentUserCpfError,
 	ExistentUserEmailError,
 	UnprocessableCpfError,
-} from '../../src/errors/index.js'
+} from '../../../src/errors/index.js'
 
 
 const sut = userService

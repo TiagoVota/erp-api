@@ -1,12 +1,12 @@
 import { jest } from '@jest/globals'
 
-import { enterpriseService } from '../../src/services/index.js'
+import { enterpriseService } from '../../../src/services/index.js'
 
-import { enterpriseRepository } from '../../src/repositories/index.js'
+import { enterpriseRepository } from '../../../src/repositories/index.js'
 
-import { clearMocks } from '../factories/jestUtilsFactory.js'
+import { clearMocks } from '../../factories/jestUtilsFactory.js'
 
-import { NoEnterpriseError } from '../../src/errors/index.js'
+import { NoEnterpriseError } from '../../../src/errors/index.js'
 
 
 const sut = enterpriseService
