@@ -40,11 +40,15 @@ const findUserById = async (id) => {
 
 const createUser = async (defaultBody) => {
 	const userBody = makeUserBody(defaultBody)
-	userBody.email = userBody.email.toLowerCase()
-	userBody.password = bcrypt.hashSync(userBody.password, 12)
+	const hashPassword = bcrypt.hashSync(userBody.password, 12)
 
 	const user = await prisma.user.create({
-		data: userBody,
+		data: {
+			...userBody,
+			email: userBody.email.toLowerCase(),
+			password: hashPassword,
+			isAdmin: Boolean(defaultBody?.isAdmin),
+		},
 	})
 
 	return user

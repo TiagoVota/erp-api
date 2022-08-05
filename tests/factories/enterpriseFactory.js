@@ -36,7 +36,19 @@ const createEnterprise = async (defaultBody) => {
 }
 
 
+const findEnterpriseById = async (id) => {
+	const enterprise = await prisma.enterprise.findUnique({
+		where: {
+			id,
+		},
+	})
+
+	return enterprise
+}
+
+
 export {
 	makeEnterpriseBody,
 	createEnterprise,
+	findEnterpriseById,
 }
