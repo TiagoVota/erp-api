@@ -8,8 +8,45 @@ const findOne = async () => {
 }
 
 
+const findByCnpj = async (cnpj) => {
+	const enterprise = await prisma.enterprise.findUnique({
+		where: {
+			cnpj,
+		},
+	})
+
+	return enterprise
+}
+
+
+const findByAdminId = async (adminId) => {
+	const enterprise = await prisma.enterprise.findUnique({
+		where: {
+			adminId,
+		},
+	})
+
+	return enterprise
+}
+
+
+const insert = async ({ adminId, enterpriseData }) => {
+	const enterprise = await prisma.enterprise.create({
+		data: {
+			adminId,
+			...enterpriseData,
+		},
+	})
+
+	return enterprise
+}
+
+
 const enterpriseRepository = {
 	findOne,
+	findByCnpj,
+	findByAdminId,
+	insert,
 }
 export {
 	enterpriseRepository
