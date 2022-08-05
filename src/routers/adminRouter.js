@@ -14,6 +14,11 @@ adminRouter.post(
 	schemaValidation.bodyMiddleware(userSchema),
 	authController.signUpAdmin,
 )
+// adminRouter.get(
+// 	'/',
+// 	schemaValidation.bodyMiddleware(enterpriseSchema),
+// 	enterpriseController.createEnterprise,
+// )
 
 
 export default adminRouter
