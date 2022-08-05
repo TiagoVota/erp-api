@@ -3,20 +3,13 @@ import supertest from 'supertest'
 
 import app from '../../src/app.js'
 
-import {
-	disconnectServer,
-	truncateEnterprises,
-	truncateUsers,
-} from '../factories/dbFactory.js'
+import { disconnectServer, cleanDb } from '../factories/dbFactory.js'
 import { createEnterprise } from '../factories/enterpriseFactory.js'
 import { generateValidToken } from '../factories/tokenFactory.js'
 
 
 describe('GET /enterprises', () => {
-	beforeEach(async () => {
-		await truncateUsers()
-		await truncateEnterprises()
-	})
+	beforeEach(cleanDb)
 
 	it('should return UNAUTHORIZED when no token is given', async () => {
 		const response = await supertest(app)
@@ -41,7 +34,6 @@ describe('GET /enterprises', () => {
 
 
 afterAll(async () => {
-	await truncateUsers()
-	await truncateEnterprises()
+	await cleanDb()
 	await disconnectServer()
 })

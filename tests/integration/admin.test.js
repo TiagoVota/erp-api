@@ -3,13 +3,13 @@ import supertest from 'supertest'
 
 import app from '../../src/app.js'
 
-import { disconnectServer, truncateUsers } from '../factories/dbFactory.js'
+import { cleanDb, disconnectServer } from '../factories/dbFactory.js'
 import { findPermissionByUserId } from '../factories/permissionFactory.js'
 import { findUserById, makeUserBody } from '../factories/userFactory.js'
 
 
 describe('POST /admin/auth/sign-up', () => {
-	beforeEach(truncateUsers)
+	beforeEach(cleanDb)
 
 	it('should return UNPROCESSABLE ENTITY invalid body', async () => {
 		const invalidBody = makeUserBody()
@@ -53,6 +53,6 @@ describe('POST /admin/auth/sign-up', () => {
 
 
 afterAll(async () => {
-	await truncateUsers()
+	await cleanDb()
 	await disconnectServer()
 })

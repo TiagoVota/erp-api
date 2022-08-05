@@ -3,7 +3,7 @@ import supertest from 'supertest'
 
 import app from '../../src/app.js'
 
-import { disconnectServer, truncateUsers } from '../factories/dbFactory.js'
+import { disconnectServer, cleanDb } from '../factories/dbFactory.js'
 import { generateValidToken } from '../factories/tokenFactory.js'
 import {
 	createUserPermissions,
@@ -18,7 +18,7 @@ import {
 
 
 describe('POST /auth/login', () => {
-	beforeEach(truncateUsers)
+	beforeEach(cleanDb)
 
 	it('should return UNPROCESSABLE ENTITY invalid body', async () => {
 		const invalidBody = makeUserLoginBody()
@@ -48,7 +48,7 @@ describe('POST /auth/login', () => {
 })
 
 describe('POST /auth/sign-up', () => {
-	beforeEach(truncateUsers)
+	beforeEach(cleanDb)
 
 	it('should return UNAUTHORIZED when no token is given', async () => {
 		const body = makeUserBody()
@@ -135,6 +135,6 @@ describe('POST /auth/sign-up', () => {
 
 
 afterAll(async () => {
-	await truncateUsers()
+	await cleanDb()
 	await disconnectServer()
 })

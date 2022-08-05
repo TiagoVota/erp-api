@@ -21,9 +21,14 @@ const truncateEnterprises = async () => {
 }
 
 
+const cleanDb = async () => {
+	await truncateHealth()
+	await truncateUsers()
+	await truncateEnterprises()
+}
+
+
 export {
 	disconnectServer,
-	truncateHealth,
-	truncateUsers,
-	truncateEnterprises,
+	cleanDb,
 }
