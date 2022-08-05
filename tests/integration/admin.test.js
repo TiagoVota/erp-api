@@ -68,7 +68,6 @@ describe('POST /admin/enterprise', () => {
 
 		const response = await supertest(app)
 			.post('/admin/enterprise')
-			.set('Authorization', `Bearer ${undefined}`)
 			.send(body)
 
 		expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
