@@ -65,8 +65,17 @@ const authorizeUser = async (loginData) => {
 }
 
 
-const findUsersAndPermissions = async () => {
-	const usersInfo = await userRepository.findWithPermissions()
+const findUsersAndPermissions = async (query) => {
+	const DEFAULT_LIMIT = 20
+	const DEFAULT_OFFSET = 0
+	
+	const limit = Number(query?.limit) || DEFAULT_LIMIT
+	const offset = Number(query?.offset) || DEFAULT_OFFSET
+
+	const usersInfo = await userRepository.findWithPermissions({
+		take: limit,
+		skip: offset * limit,
+	})
 
 	return formatUsersData(usersInfo)
 }

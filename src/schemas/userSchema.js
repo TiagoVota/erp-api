@@ -13,8 +13,14 @@ const loginSchema = Joi.object({
 	password: Joi.string().min(5).max(80).required(),
 }).length(2)
 
+const usersQuerySchema = Joi.object({
+	limit: Joi.number().min(0).max(1000),
+	offset: Joi.number().min(0),
+})
+
 
 export {
 	userSchema,
 	loginSchema,
+	usersQuerySchema,
 }

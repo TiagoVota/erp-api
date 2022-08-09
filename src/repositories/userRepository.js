@@ -47,11 +47,13 @@ const findById = async (id) => {
 }
 
 
-const findWithPermissions = async () => {
+const findWithPermissions = async ({ take, skip }) => {
 	const usersWithPermissions = await prisma.user.findMany({
 		include: {
 			permissions: true,
-		}
+		},
+		take,
+		skip,
 	})
 
 	return usersWithPermissions
