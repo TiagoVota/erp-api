@@ -1,18 +1,18 @@
 import { jest } from '@jest/globals'
 import bcrypt from 'bcrypt'
 
-import { userService } from '../../src/services/index.js'
+import { userService } from '../../../src/services/index.js'
 
-import { userRepository } from '../../src/repositories/index.js'
+import { userRepository } from '../../../src/repositories/index.js'
 
-import { clearMocks } from '../factories/jestUtilsFactory.js'
-import { makeUserLoginBody } from '../factories/userFactory.js'
-import { generateId } from '../factories/idFactory.js'
+import { clearMocks } from '../../factories/jestUtilsFactory.js'
+import { makeUserLoginBody } from '../../factories/userFactory.js'
+import { generateId } from '../../factories/idFactory.js'
 
 import {
 	InvalidPasswordError,
 	NoUserError,
-} from '../../src/errors/index.js'
+} from '../../../src/errors/index.js'
 
 
 const sut = userService

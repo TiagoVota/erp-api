@@ -12,13 +12,12 @@ const authMiddleware = async (req, res, next) => {
 	try {
 		if (!token) throw new AuthError()
 
-		const user = verifyToken(token)
-		if (!user) throw new AuthError()
+		const tokenUser = verifyToken(token)
 
-		const existentUser = await userService.validateUserByIdOrFail(user.id)
-		delete existentUser.password
+		const user = await userService.validateUserByIdOrFail(tokenUser?.id)
+		delete user.password
 	
-		res.locals.user = existentUser
+		res.locals.user = user
 
 		next()
 

@@ -10,6 +10,7 @@ import {
 	ExistentAdminError,
 	ExistentUserCpfError,
 	ExistentUserEmailError,
+	ForbiddenAdminError,
 	InvalidPasswordError,
 	NoUserByIdError,
 	NoUserError,
@@ -82,6 +83,10 @@ const validateExistentAdminOrFail = async () => {
 	return existentAdmin
 }
 
+const validateAdminOrFail = async (isAdmin) => {
+	if (!isAdmin) throw new ForbiddenAdminError()
+}
+
 const validateExistentUserOrFail = async (email, cpf) => {
 	await validateExistentUserEmailOrFail(email)
 	await validateExistentCpfOrFail(cpf)
@@ -135,4 +140,5 @@ export {
 	createUser,
 	authorizeUser,
 	validateUserByIdOrFail,
+	validateAdminOrFail,
 }

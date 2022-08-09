@@ -1,5 +1,6 @@
-import { HealthError } from '../errors/index.js'
 import { healthRepository } from '../repositories/index.js'
+
+import { HealthError } from '../errors/index.js'
 
 
 const getHealth = async () => {

@@ -22,13 +22,13 @@ model Enterprise {
   id            Int      @id @default(autoincrement())
   cnpj          String   @unique @db.VarChar(14)
   corporateName String   @db.VarChar(80)
-  tradiongName  String   @db.VarChar(80)
+  tradingName   String   @db.VarChar(80)
   admin         User     @relation(fields: [adminId], references: [id])
   adminId       Int      @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  @@map("enterpises")
+  @@map("enterprises")
 }
 
 model User {

@@ -3,11 +3,11 @@ import supertest from 'supertest'
 
 import app from '../../src/app.js'
 
-import { disconnectServer, truncateHealth } from '../factories/dbFactory.js'
+import { disconnectServer, cleanDb } from '../factories/dbFactory.js'
 
 
 describe('GET /health', () => {
-	beforeEach(truncateHealth)
+	beforeEach(cleanDb)
 
 	it('should verify if tests are alive', () => {
 		expect(1).toEqual(1)
@@ -23,6 +23,6 @@ describe('GET /health', () => {
 
 
 afterAll(async () => {
-	await truncateHealth()
+	await cleanDb()
 	await disconnectServer()
 })
