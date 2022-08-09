@@ -7,7 +7,7 @@ import * as schemaValidation from '../middlewares/schemaValidation/index.js'
 
 import { userController } from '../controllers/index.js'
 
-import { usersQuerySchema } from '../schemas/userSchema.js'
+import { userParamsSchema, usersQuerySchema } from '../schemas/userSchema.js'
 
 
 const userRouter = Router()
@@ -19,6 +19,11 @@ userRouter.get(
 	permissionMiddleware('seeUsers'),
 	schemaValidation.queryMiddleware(usersQuerySchema),
 	userController.getUsersAndPermissions,
+)
+userRouter.get(
+	'/:userId',
+	schemaValidation.paramsMiddleware(userParamsSchema),
+	userController.getUser,
 )
 
 export default userRouter

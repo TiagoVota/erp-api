@@ -17,6 +17,22 @@ const getUsersAndPermissions = async (req, res, next) => {
 }
 
 
+const getUser = async (req, res, next) => {
+	const user = res.locals.user
+	const userId = Number(req.params.userId)
+
+	try {
+		const userInfo = await userService.findUser({ userId, user })
+
+		return res.status(StatusCodes.OK).send(userInfo)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 export {
 	getUsersAndPermissions,
+	getUser,
 }

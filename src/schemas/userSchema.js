@@ -18,9 +18,14 @@ const usersQuerySchema = Joi.object({
 	offset: Joi.number().min(0),
 })
 
+const userParamsSchema = Joi.object({
+	userId: Joi.number().min(0).required(),
+}).length(1)
+
 
 export {
 	userSchema,
 	loginSchema,
 	usersQuerySchema,
+	userParamsSchema,
 }

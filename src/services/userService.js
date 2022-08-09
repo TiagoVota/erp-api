@@ -1,4 +1,4 @@
-import { userRepository } from '../repositories/index.js'
+import { permissionRepository, userRepository } from '../repositories/index.js'
 
 import { getCpfNumbers, isValidCpf } from '../utils/cpfCnpjValidations.js'
 import { encryptValue, isValidEncrypt } from '../utils/encryptor.js'
@@ -81,6 +81,21 @@ const findUsersAndPermissions = async (query) => {
 }
 
 
+const findUser = async ({ userId, user }) => {
+	const permissions = await permissionRepository.findByUserId(user.id)
+	const isSameUser = Boolean(userId === user.id)
+
+	const haveToIncludePermission = isSameUser || permissions.seeUsers
+
+	const usersInfo = await userRepository.find({
+		id: userId,
+		haveToIncludePermission,
+	})
+
+	return formatUserData(usersInfo)
+}
+
+
 const formatCreateBodyOrFail = async (createUserBody) => {
 	const { cpf, email } = createUserBody
 	if (!isValidCpf(cpf)) throw new UnprocessableCpfError(cpf)
@@ -158,4 +173,5 @@ export {
 	validateUserByIdOrFail,
 	validateAdminOrFail,
 	findUsersAndPermissions,
+	findUser,
 }

@@ -3,6 +3,21 @@ import prisma from '../database/database.js'
 import { permissionRepository } from './index.js'
 
 
+const find = async ({ id, haveToIncludePermission }) => {
+	const include = haveToIncludePermission
+		? { include: { permissions: true } }
+		: {}
+
+	const user = await prisma.user.findFirst({
+		where: {
+			id,
+		},
+		...include,
+	})
+
+	return user
+}
+
 const findAdmin = async () => {
 	const admin = await prisma.user.findFirst({
 		where: {
@@ -86,6 +101,7 @@ const insert = async (userData) => {
 
 
 const userRepository = {
+	find,
 	findAdmin,
 	findByEmail,
 	findByCpf,
