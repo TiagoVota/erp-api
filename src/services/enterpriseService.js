@@ -7,6 +7,7 @@ import { getCnpjNumbers, isValidCnpj } from '../utils/cpfCnpjValidations.js'
 import {
 	ExistentEnterpriseAdminError,
 	ExistentEnterpriseCnpjError,
+	NoEnterpriseAdminError,
 	NoEnterpriseError,
 	UnprocessableCnpjError,
 } from '../errors/index.js'
@@ -20,7 +21,7 @@ const findEnterprise = async () => {
 
 
 const createEnterprise = async ({ enterprise, user }) => {
-	const formattedBody = await formatCreateBodyOrFail(enterprise)
+	const formattedBody = await formatBodyOrFail(enterprise)
 
 	await userService.validateAdminOrFail(user.isAdmin)
 	await validateExistentEnterpriseOrFail(formattedBody.cnpj, user.id)
@@ -34,6 +35,21 @@ const createEnterprise = async ({ enterprise, user }) => {
 }
 
 
+const updateEnterprise = async ({ enterprise, user }) => {
+	const formattedBody = await formatBodyOrFail(enterprise)
+
+	await userService.validateAdminOrFail(user.isAdmin)
+	await validateExistentUpdateEnterpriseOrFail(formattedBody.cnpj, user.id)
+
+	const updatedEnterprise = await enterpriseRepository.update({
+		adminId: user.id,
+		enterpriseData: formattedBody,
+	})
+
+	return updatedEnterprise
+}
+
+
 const findEnterpriseOrFail = async () => {
 	const enterprise = await enterpriseRepository.findOne()
 	if (!enterprise) throw new NoEnterpriseError()
@@ -41,7 +57,7 @@ const findEnterpriseOrFail = async () => {
 	return enterprise
 }
 
-const formatCreateBodyOrFail = async (createEnterpriseBody) => {
+const formatBodyOrFail = async (createEnterpriseBody) => {
 	const { cnpj } = createEnterpriseBody
 	if (!isValidCnpj(cnpj)) throw new UnprocessableCnpjError(cnpj)
 
@@ -67,8 +83,23 @@ const validateExistentEnterpriseAdminOrFail = async (adminId) => {
 	if (existentEnterpriseAdmin) throw new ExistentEnterpriseAdminError(adminId)
 }
 
+const validateExistentUpdateEnterpriseOrFail = async (cnpj, adminId) => {
+	const oldEnterpriseData = await validateEnterpriseOrFail(adminId)
+
+	const haveSameCnpj = Boolean(oldEnterpriseData.cnpj === cnpj)
+	if (!haveSameCnpj) await validateExistentCnpjOrFail(cnpj)
+}
+
+const validateEnterpriseOrFail = async (adminId) => {
+	const enterprise = await enterpriseRepository.findByAdminId(adminId)
+	if (!enterprise) throw new NoEnterpriseAdminError(adminId)
+
+	return enterprise
+}
+
 
 export {
 	findEnterprise,
 	createEnterprise,
+	updateEnterprise,
 }

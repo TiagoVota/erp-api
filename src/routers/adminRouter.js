@@ -20,12 +20,17 @@ adminRouter.post(
 	authController.signUpAdmin,
 )
 
-
 adminRouter.use(authMiddleware)
 adminRouter.post(
 	'/enterprise',
 	schemaValidation.bodyMiddleware(enterpriseSchema),
 	enterpriseController.createEnterprise,
+)
+
+adminRouter.put(
+	'/enterprise',
+	schemaValidation.bodyMiddleware(enterpriseSchema),
+	enterpriseController.editEnterprise,
 )
 
 

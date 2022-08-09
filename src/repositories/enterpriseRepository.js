@@ -42,11 +42,24 @@ const insert = async ({ adminId, enterpriseData }) => {
 }
 
 
+const update = async ({ adminId, enterpriseData }) => {
+	const enterprise = await prisma.enterprise.update({
+		where: {
+			adminId
+		},
+		data: enterpriseData,
+	})
+
+	return enterprise
+}
+
+
 const enterpriseRepository = {
 	findOne,
 	findByCnpj,
 	findByAdminId,
 	insert,
+	update,
 }
 export {
 	enterpriseRepository

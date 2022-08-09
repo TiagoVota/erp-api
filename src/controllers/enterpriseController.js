@@ -31,7 +31,24 @@ const createEnterprise = async (req, res, next) => {
 }
 
 
+const editEnterprise = async (req, res, next) => {
+	const enterprise = req.body
+	const user = res.locals.user
+
+	try {
+		const updatedEnterprise = await enterpriseService
+			.updateEnterprise({ enterprise, user })
+
+		return res.status(StatusCodes.OK).send(updatedEnterprise)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 export {
 	getEnterprise,
 	createEnterprise,
+	editEnterprise,
 }
