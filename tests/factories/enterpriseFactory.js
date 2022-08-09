@@ -32,7 +32,7 @@ const createEnterprise = async (defaultBody) => {
 		},
 	})
 
-	return enterprise
+	return { admin, enterprise }
 }
 
 
