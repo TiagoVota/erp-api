@@ -23,7 +23,7 @@ const findEnterprise = async () => {
 const createEnterprise = async ({ enterprise, user }) => {
 	const formattedBody = await formatBodyOrFail(enterprise)
 
-	await userService.validateAdminOrFail(user.isAdmin)
+	userService.validateAdminOrFail(user.isAdmin)
 	await validateExistentEnterpriseOrFail(formattedBody.cnpj, user.id)
 
 	const createdEnterprise = await enterpriseRepository.insert({
@@ -38,7 +38,7 @@ const createEnterprise = async ({ enterprise, user }) => {
 const updateEnterprise = async ({ enterprise, user }) => {
 	const formattedBody = await formatBodyOrFail(enterprise)
 
-	await userService.validateAdminOrFail(user.isAdmin)
+	userService.validateAdminOrFail(user.isAdmin)
 	await validateExistentUpdateEnterpriseOrFail(formattedBody.cnpj, user.id)
 
 	const updatedEnterprise = await enterpriseRepository.update({

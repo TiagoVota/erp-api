@@ -3,7 +3,7 @@ import { userRepository } from '../repositories/index.js'
 import { getCpfNumbers, isValidCpf } from '../utils/cpfCnpjValidations.js'
 import { encryptValue, isValidEncrypt } from '../utils/encryptor.js'
 import { generateToken } from '../utils/authorizations.js'
-import { formatTokenData } from './helpers/formatUserHelper.js'
+import { formatUserData, formatUsersData } from './helpers/formatUserHelper.js'
 import { makeAdminPermissions } from './helpers/adminHelper.js'
 
 import {
@@ -59,9 +59,16 @@ const authorizeUser = async (loginData) => {
 	const user = await validateUserEmailOrFail(loginData.email)
 	validatePasswordOrFail(loginData.password, user.password)
 
-	const token = generateToken(formatTokenData(user))
+	const token = generateToken(formatUserData(user))
 
 	return { token }
+}
+
+
+const findUsersAndPermissions = async () => {
+	const usersInfo = await userRepository.findWithPermissions()
+
+	return formatUsersData(usersInfo)
 }
 
 
@@ -83,7 +90,7 @@ const validateExistentAdminOrFail = async () => {
 	return existentAdmin
 }
 
-const validateAdminOrFail = async (isAdmin) => {
+const validateAdminOrFail = (isAdmin) => {
 	if (!isAdmin) throw new ForbiddenAdminError()
 }
 
@@ -141,4 +148,5 @@ export {
 	authorizeUser,
 	validateUserByIdOrFail,
 	validateAdminOrFail,
+	findUsersAndPermissions,
 }

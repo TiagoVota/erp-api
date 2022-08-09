@@ -47,6 +47,17 @@ const findById = async (id) => {
 }
 
 
+const findWithPermissions = async () => {
+	const usersWithPermissions = await prisma.user.findMany({
+		include: {
+			permissions: true,
+		}
+	})
+
+	return usersWithPermissions
+}
+
+
 const insertUser = async (userData, permissionsOptions={}) => {
 	const insertedInfo = await prisma.$transaction(async () => {
 		const user = await insert(userData)
@@ -77,6 +88,7 @@ const userRepository = {
 	findByEmail,
 	findByCpf,
 	findById,
+	findWithPermissions,
 	insertUser,
 }
 export {

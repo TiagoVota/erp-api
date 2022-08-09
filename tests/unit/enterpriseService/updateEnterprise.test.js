@@ -9,7 +9,6 @@ import { clearMocks } from '../../factories/jestUtilsFactory.js'
 import { makeUserBody } from '../../factories/userFactory.js'
 
 import {
-	ExistentEnterpriseAdminError,
 	ExistentEnterpriseCnpjError,
 	ForbiddenAdminError,
 	NoEnterpriseAdminError,

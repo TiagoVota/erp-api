@@ -19,6 +19,7 @@ authRouter.post(
 )
 
 authRouter.use(authMiddleware)
+
 authRouter.post(
 	'/sign-up',
 	permissionMiddleware('addUsers'),

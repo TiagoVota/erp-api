@@ -9,6 +9,7 @@ const enterpriseRouter = Router()
 
 
 enterpriseRouter.use(authMiddleware)
+
 enterpriseRouter.get(
 	'',
 	enterpriseController.getEnterprise,
