@@ -1,9 +1,14 @@
 import { Prisma } from '@prisma/client'
 
-import prisma from '../src/database/database.js'
+import prisma from '../../../src/database/database.js'
 
 
-const emptyDatabase = async () => {
+const disconnectDb = async () => {
+	await prisma.$disconnect()
+}
+
+
+const truncateDb = async () => {
 	const tables = Prisma.dmmf.datamodel.models.map(model => {
 		return model.dbName || model.name
 	})
@@ -15,17 +20,8 @@ const emptyDatabase = async () => {
 	return Promise.all(deletePromises)
 }
 
-const main = async () => {
-	// Clear db
-	await emptyDatabase()
+
+export {
+	disconnectDb,
+	truncateDb,
 }
-
-
-main()
-	.catch((error) => {
-		console.log(error)
-		process.exit(1)
-	})
-	.finally(async () => {
-		await prisma.$disconnect()
-	})
