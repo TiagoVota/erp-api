@@ -5,10 +5,15 @@ import * as schemaValidation from '../middlewares/schemaValidation/index.js'
 
 import {
 	authController,
-	enterpriseController
+	enterpriseController,
+	userController,
 } from '../controllers/index.js'
 
-import { userSchema } from '../schemas/userSchema.js'
+import {
+	editUserByAdminSchema,
+	userParamsSchema,
+	userSchema,
+} from '../schemas/userSchema.js'
 import { enterpriseSchema } from '../schemas/enterpriseSchema.js'
 
 
@@ -32,6 +37,12 @@ adminRouter.put(
 	'/enterprise',
 	schemaValidation.bodyMiddleware(enterpriseSchema),
 	enterpriseController.editEnterprise,
+)
+adminRouter.put(
+	'/users/:userId',
+	schemaValidation.paramsMiddleware(userParamsSchema),
+	schemaValidation.bodyMiddleware(editUserByAdminSchema),
+	userController.editUserByAdmin,
 )
 
 

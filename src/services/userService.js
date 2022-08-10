@@ -21,7 +21,7 @@ import {
 
 
 const createAdmin = async (createAdminBody) => {
-	const formattedBody = await formatCreateBodyOrFail(createAdminBody)
+	const formattedBody = formatUserBodyOrFail(createAdminBody)
 
 	await validateExistentAdminOrFail()
 	await validateExistentUserOrFail(formattedBody.email, formattedBody.cpf)
@@ -42,7 +42,7 @@ const createAdmin = async (createAdminBody) => {
 
 
 const createUser = async (createAdminBody) => {
-	const formattedBody = await formatCreateBodyOrFail(createAdminBody)
+	const formattedBody = formatUserBodyOrFail(createAdminBody)
 
 	await validateExistentUserOrFail(formattedBody.email, formattedBody.cpf)
 
@@ -99,7 +99,7 @@ const findUser = async ({ userId, user }) => {
 
 
 const updateUser = async ({ userId, userData, requestUser }) => {
-	const formattedBody = formatUpdateBody(userData)
+	const formattedBody = formatUserBodyOrFail(userData)
 
 	const oldUser = await validateUserByIdOrFail(userId)
 	await validateUserActionOrFail(requestUser.id, userId)
@@ -113,7 +113,25 @@ const updateUser = async ({ userId, userData, requestUser }) => {
 		data: {
 			...formattedBody,
 			password: hashPassword,
-		}
+		},
+	})
+
+	return formatUserData(updatedUser)
+}
+
+
+const updateUserByAdmin = async ({ userId, userData, requestUser }) => {
+	validateAdminOrFail(requestUser.isAdmin)
+
+	const formattedBody = formatUserBodyOrFail(userData)
+
+	const oldUser = await validateUserByIdOrFail(userId)
+	const isSameEmail = Boolean(formattedBody.email === oldUser.email)
+	if (!isSameEmail) await validateExistentUserEmailOrFail(formattedBody.email)
+	
+	const updatedUser = await userRepository.updateById({
+		id: userId,
+		data: formattedBody,
 	})
 
 	return formatUserData(updatedUser)
@@ -130,22 +148,23 @@ const removeUser = async ({ userId }) => {
 }
 
 
-const formatCreateBodyOrFail = async (createUserBody) => {
+const formatUserBodyOrFail = (createUserBody) => {
 	const { cpf, email } = createUserBody
-	if (!isValidCpf(cpf)) throw new UnprocessableCpfError(cpf)
-
-	return {
+	const formattedBody = {
 		...createUserBody,
-		cpf: getCpfNumbers(cpf),
 		email: email.trim().toLowerCase(),
 	}
+
+	if (cpf) {
+		validadeValidCpfOrFail(cpf)
+		formattedBody.cpf = getCpfNumbers(cpf)
+	}
+
+	return formattedBody
 }
 
-const formatUpdateBody = (updateUserBody) => {
-	return {
-		...updateUserBody,
-		email: updateUserBody.email.trim().toLowerCase(),
-	}
+const validadeValidCpfOrFail = (cpf) => {
+	if (!isValidCpf(cpf)) throw new UnprocessableCpfError(cpf)
 }
 
 const validateExistentAdminOrFail = async () => {
@@ -224,6 +243,7 @@ export {
 	validateAdminOrFail,
 	findUsersAndPermissions,
 	findUser,
-	removeUser,
 	updateUser,
+	updateUserByAdmin,
+	removeUser,
 }
