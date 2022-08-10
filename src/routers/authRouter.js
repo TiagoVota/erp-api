@@ -27,4 +27,5 @@ authRouter.post(
 	authController.signUpUser,
 )
 
+
 export default authRouter

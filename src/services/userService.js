@@ -10,6 +10,7 @@ import {
 	ExistentAdminError,
 	ExistentUserCpfError,
 	ExistentUserEmailError,
+	ForbiddenAdminDeleteError,
 	ForbiddenAdminError,
 	InvalidPasswordError,
 	NoUserByIdError,
@@ -96,6 +97,16 @@ const findUser = async ({ userId, user }) => {
 }
 
 
+const removeUser = async ({ userId }) => {
+	const user = await validateUserByIdOrFail(userId)
+	validateAdminDeleteOrFail(user.isAdmin, userId)
+
+	const deletedUser = await userRepository.deleteById(userId)
+
+	return formatUserData(deletedUser)
+}
+
+
 const formatCreateBodyOrFail = async (createUserBody) => {
 	const { cpf, email } = createUserBody
 	if (!isValidCpf(cpf)) throw new UnprocessableCpfError(cpf)
@@ -165,6 +176,10 @@ const validateUserByIdOrFail = async (userId) => {
 	return user
 }
 
+const validateAdminDeleteOrFail = (isAdmin, userId) => {
+	if (isAdmin) throw new ForbiddenAdminDeleteError(userId)
+}
+
 
 export {
 	createAdmin,
@@ -174,4 +189,5 @@ export {
 	validateAdminOrFail,
 	findUsersAndPermissions,
 	findUser,
+	removeUser,
 }

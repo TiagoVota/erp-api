@@ -12,6 +12,7 @@ import NoEnterpriseError from './NoEnterpriseError.js'
 import NoUserByIdError from './NoUserByIdError.js'
 import NoUserError from './NoUserError.js'
 import SchemaError from './SchemaError.js'
+import ForbiddenAdminDeleteError from './ForbiddenAdminDeleteError.js'
 import ForbiddenAdminError from './ForbiddenAdminError.js'
 import UnprocessableCnpjError from './UnprocessableCnpjError.js'
 import UnprocessableCpfError from './UnprocessableCpfError.js'
@@ -24,6 +25,7 @@ export {
 	ExistentEnterpriseCnpjError,
 	ExistentUserCpfError,
 	ExistentUserEmailError,
+	ForbiddenAdminDeleteError,
 	ForbiddenAdminError,
 	ForbiddenPermissionError,
 	HealthError,

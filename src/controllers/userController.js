@@ -32,7 +32,22 @@ const getUser = async (req, res, next) => {
 }
 
 
+const deleteUser = async (req, res, next) => {
+	const userId = Number(req.params.userId)
+
+	try {
+		const deletedUser = await userService.removeUser({ userId })
+
+		return res.status(StatusCodes.OK).send(deletedUser)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 export {
 	getUsersAndPermissions,
 	getUser,
+	deleteUser,
 }

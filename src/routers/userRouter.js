@@ -26,4 +26,12 @@ userRouter.get(
 	userController.getUser,
 )
 
+userRouter.delete(
+	'/:userId',
+	permissionMiddleware('deleteUsers'),
+	schemaValidation.paramsMiddleware(userParamsSchema),
+	userController.deleteUser,
+)
+
+
 export default userRouter

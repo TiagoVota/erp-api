@@ -93,7 +93,18 @@ const insertUser = async (userData, permissionsOptions={}) => {
 
 const insert = async (userData) => {
 	const user = await prisma.user.create({
-		data: userData
+		data: userData,
+	})
+
+	return user
+}
+
+
+const deleteById = async (id) => {
+	const user = await prisma.user.delete({
+		where: {
+			id,
+		},
 	})
 
 	return user
@@ -108,6 +119,7 @@ const userRepository = {
 	findById,
 	findWithPermissions,
 	insertUser,
+	deleteById,
 }
 export {
 	userRepository
