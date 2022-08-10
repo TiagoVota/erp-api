@@ -7,7 +7,7 @@ import * as schemaValidation from '../middlewares/schemaValidation/index.js'
 
 import { userController } from '../controllers/index.js'
 
-import { userParamsSchema, usersQuerySchema } from '../schemas/userSchema.js'
+import { editUserSchema, userParamsSchema, usersQuerySchema } from '../schemas/userSchema.js'
 
 
 const userRouter = Router()
@@ -24,6 +24,13 @@ userRouter.get(
 	'/:userId',
 	schemaValidation.paramsMiddleware(userParamsSchema),
 	userController.getUser,
+)
+
+userRouter.put(
+	'/:userId',
+	schemaValidation.paramsMiddleware(userParamsSchema),
+	schemaValidation.paramsMiddleware(editUserSchema),
+	userController.editUser,
 )
 
 userRouter.delete(

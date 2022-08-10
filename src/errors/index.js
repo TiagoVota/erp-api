@@ -5,6 +5,7 @@ import ExistentEnterpriseCnpjError from './ExistentEnterpriseCnpjError.js'
 import ExistentUserCpfError from './ExistentUserCpfError.js'
 import ExistentUserEmailError from './ExistentUserEmailError.js'
 import ForbiddenPermissionError from './ForbiddenPermissionError.js'
+import ForbiddenUserAction from './ForbiddenUserAction.js'
 import HealthError from './HealthError.js'
 import InvalidPasswordError from './InvalidPasswordError.js'
 import NoEnterpriseAdminError from './NoEnterpriseAdminError.js'
@@ -28,6 +29,7 @@ export {
 	ForbiddenAdminDeleteError,
 	ForbiddenAdminError,
 	ForbiddenPermissionError,
+	ForbiddenUserAction,
 	HealthError,
 	InvalidPasswordError,
 	NoEnterpriseAdminError,

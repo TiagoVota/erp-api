@@ -32,6 +32,26 @@ const getUser = async (req, res, next) => {
 }
 
 
+const editUser = async (req, res, next) => {
+	const userId = Number(req.params.userId)
+	const userData = req.body
+	const requestUser = res.locals.user
+
+	try {
+		const editedUser = await userService.updateUser({
+			userId,
+			userData,
+			requestUser,
+		})
+
+		return res.status(StatusCodes.OK).send(editedUser)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 const deleteUser = async (req, res, next) => {
 	const userId = Number(req.params.userId)
 
@@ -49,5 +69,6 @@ const deleteUser = async (req, res, next) => {
 export {
 	getUsersAndPermissions,
 	getUser,
+	editUser,
 	deleteUser,
 }

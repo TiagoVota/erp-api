@@ -100,6 +100,18 @@ const insert = async (userData) => {
 }
 
 
+const updateById = async ({ id, data }) => {
+	const user = await prisma.user.update({
+		where: {
+			id,
+		},
+		data,
+	})
+
+	return user
+}
+
+
 const deleteById = async (id) => {
 	const user = await prisma.user.delete({
 		where: {
@@ -119,6 +131,7 @@ const userRepository = {
 	findById,
 	findWithPermissions,
 	insertUser,
+	updateById,
 	deleteById,
 }
 export {

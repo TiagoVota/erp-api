@@ -12,6 +12,7 @@ import {
 	ExistentUserEmailError,
 	ForbiddenAdminDeleteError,
 	ForbiddenAdminError,
+	ForbiddenUserAction,
 	InvalidPasswordError,
 	NoUserByIdError,
 	NoUserError,
@@ -97,6 +98,28 @@ const findUser = async ({ userId, user }) => {
 }
 
 
+const updateUser = async ({ userId, userData, requestUser }) => {
+	const formattedBody = formatUpdateBody(userData)
+
+	const oldUser = await validateUserByIdOrFail(userId)
+	await validateUserActionOrFail(requestUser.id, userId)
+	const isSameEmail = Boolean(formattedBody.email === oldUser.email)
+	if (!isSameEmail) await validateExistentUserEmailOrFail(formattedBody.email)
+	
+	const hashPassword = encryptValue(formattedBody.password)
+
+	const updatedUser = await userRepository.updateById({
+		id: userId,
+		data: {
+			...formattedBody,
+			password: hashPassword,
+		}
+	})
+
+	return formatUserData(updatedUser)
+}
+
+
 const removeUser = async ({ userId }) => {
 	const user = await validateUserByIdOrFail(userId)
 	validateAdminDeleteOrFail(user.isAdmin, userId)
@@ -115,6 +138,13 @@ const formatCreateBodyOrFail = async (createUserBody) => {
 		...createUserBody,
 		cpf: getCpfNumbers(cpf),
 		email: email.trim().toLowerCase(),
+	}
+}
+
+const formatUpdateBody = (updateUserBody) => {
+	return {
+		...updateUserBody,
+		email: updateUserBody.email.trim().toLowerCase(),
 	}
 }
 
@@ -180,6 +210,11 @@ const validateAdminDeleteOrFail = (isAdmin, userId) => {
 	if (isAdmin) throw new ForbiddenAdminDeleteError(userId)
 }
 
+const validateUserActionOrFail = async (requestedUserId, givenUserId) => {
+	const isSameUser = Boolean(requestedUserId === givenUserId)
+	if (!isSameUser) throw new ForbiddenUserAction(givenUserId)
+}
+
 
 export {
 	createAdmin,
@@ -190,4 +225,5 @@ export {
 	findUsersAndPermissions,
 	findUser,
 	removeUser,
+	updateUser,
 }
