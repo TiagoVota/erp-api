@@ -27,6 +27,16 @@ const makeUserLoginBody = (defaultBody) => {
 }
 
 
+const makeUpdateUserBody = (defaultBody, isAdmin) => {
+	const userBody = makeUserBody(defaultBody)
+	Boolean(isAdmin)
+		? delete userBody.password
+		: delete userBody.cpf
+
+	return userBody
+}
+
+
 const findUserById = async (id) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -58,6 +68,7 @@ const createUser = async (defaultBody) => {
 export {
 	makeUserBody,
 	makeUserLoginBody,
+	makeUpdateUserBody,
 	findUserById,
 	createUser,
 }

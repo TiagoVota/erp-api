@@ -29,7 +29,7 @@ userRouter.get(
 userRouter.put(
 	'/:userId',
 	schemaValidation.paramsMiddleware(userParamsSchema),
-	schemaValidation.paramsMiddleware(editUserSchema),
+	schemaValidation.bodyMiddleware(editUserSchema),
 	userController.editUser,
 )
 

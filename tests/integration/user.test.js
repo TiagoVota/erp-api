@@ -9,7 +9,7 @@ import {
 	createUserPermissions,
 	findPermissionByUserId,
 } from '../factories/permissionFactory.js'
-import { createUser, findUserById } from '../factories/userFactory.js'
+import { createUser, findUserById, makeUpdateUserBody } from '../factories/userFactory.js'
 import { generateId } from '../factories/idFactory.js'
 
 
@@ -218,6 +218,78 @@ describe('DELETE /users/:userId', () => {
 
 		expect(deletedUser).toBeNull()
 		expect(deletedPermission).toBeNull()
+	})
+})
+
+describe('PUT /users/:userId', () => {
+	beforeEach(cleanDb)
+
+	it('should return UNAUTHORIZED when no token is given', async () => {
+		const userId = generateId()
+
+		const response = await supertest(app)
+			.put(`/users/${userId}`)
+			.set('Authorization', `Bearer ${undefined}`)
+
+		expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid params', async () => {
+		const user = await createUser()
+		const invalidUserId = 'invalid userId'
+
+		const token = await generateValidToken({ defaultUser: user })
+
+		const response = await supertest(app)
+			.put(`/users/${invalidUserId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid body', async () => {
+		const user = await createUser()
+		const invalidBody = makeUpdateUserBody()
+		delete invalidBody.email
+
+		const token = await generateValidToken({ defaultUser: user })
+
+		const response = await supertest(app)
+			.put(`/users/${user.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(invalidBody)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return OK when update user', async () => {
+		const user = await createUser()
+		const body = makeUpdateUserBody()
+
+		const token = await generateValidToken({ defaultUser: user })
+
+		const response = await supertest(app)
+			.put(`/users/${user.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+
+		expect(response.status).toEqual(StatusCodes.OK)
+	})
+
+	it('should update user in database', async () => {
+		const user = await createUser()
+		const body = makeUpdateUserBody()
+		const toInsertEmail = body.email.trim().toLowerCase()
+
+		const token = await generateValidToken({ defaultUser: user })
+
+		await supertest(app)
+			.put(`/users/${user.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+		const updatedUser = await findUserById(user.id)
+
+		expect(updatedUser.email).toEqual(toInsertEmail)
 	})
 })
 
