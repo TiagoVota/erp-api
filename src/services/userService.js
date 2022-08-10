@@ -1,16 +1,18 @@
-import { userRepository } from '../repositories/index.js'
+import { permissionRepository, userRepository } from '../repositories/index.js'
 
 import { getCpfNumbers, isValidCpf } from '../utils/cpfCnpjValidations.js'
 import { encryptValue, isValidEncrypt } from '../utils/encryptor.js'
 import { generateToken } from '../utils/authorizations.js'
-import { formatTokenData } from './helpers/formatUserHelper.js'
+import { formatUserData, formatUsersData } from './helpers/formatUserHelper.js'
 import { makeAdminPermissions } from './helpers/adminHelper.js'
 
 import {
 	ExistentAdminError,
 	ExistentUserCpfError,
 	ExistentUserEmailError,
+	ForbiddenAdminDeleteError,
 	ForbiddenAdminError,
+	ForbiddenUserAction,
 	InvalidPasswordError,
 	NoUserByIdError,
 	NoUserError,
@@ -59,9 +61,72 @@ const authorizeUser = async (loginData) => {
 	const user = await validateUserEmailOrFail(loginData.email)
 	validatePasswordOrFail(loginData.password, user.password)
 
-	const token = generateToken(formatTokenData(user))
+	const token = generateToken(formatUserData(user))
 
 	return { token }
+}
+
+
+const findUsersAndPermissions = async (query) => {
+	const DEFAULT_LIMIT = 20
+	const DEFAULT_OFFSET = 0
+	
+	const limit = Number(query?.limit) || DEFAULT_LIMIT
+	const offset = Number(query?.offset) || DEFAULT_OFFSET
+
+	const usersInfo = await userRepository.findWithPermissions({
+		take: limit,
+		skip: offset * limit,
+	})
+
+	return formatUsersData(usersInfo)
+}
+
+
+const findUser = async ({ userId, user }) => {
+	const permissions = await permissionRepository.findByUserId(user.id)
+	const isSameUser = Boolean(userId === user.id)
+
+	const haveToIncludePermission = isSameUser || permissions.seeUsers
+
+	const usersInfo = await userRepository.find({
+		id: userId,
+		haveToIncludePermission,
+	})
+
+	return formatUserData(usersInfo)
+}
+
+
+const updateUser = async ({ userId, userData, requestUser }) => {
+	const formattedBody = formatUpdateBody(userData)
+
+	const oldUser = await validateUserByIdOrFail(userId)
+	await validateUserActionOrFail(requestUser.id, userId)
+	const isSameEmail = Boolean(formattedBody.email === oldUser.email)
+	if (!isSameEmail) await validateExistentUserEmailOrFail(formattedBody.email)
+	
+	const hashPassword = encryptValue(formattedBody.password)
+
+	const updatedUser = await userRepository.updateById({
+		id: userId,
+		data: {
+			...formattedBody,
+			password: hashPassword,
+		}
+	})
+
+	return formatUserData(updatedUser)
+}
+
+
+const removeUser = async ({ userId }) => {
+	const user = await validateUserByIdOrFail(userId)
+	validateAdminDeleteOrFail(user.isAdmin, userId)
+
+	const deletedUser = await userRepository.deleteById(userId)
+
+	return formatUserData(deletedUser)
 }
 
 
@@ -76,6 +141,13 @@ const formatCreateBodyOrFail = async (createUserBody) => {
 	}
 }
 
+const formatUpdateBody = (updateUserBody) => {
+	return {
+		...updateUserBody,
+		email: updateUserBody.email.trim().toLowerCase(),
+	}
+}
+
 const validateExistentAdminOrFail = async () => {
 	const existentAdmin = await userRepository.findAdmin()
 	if (existentAdmin) throw new ExistentAdminError()
@@ -83,7 +155,7 @@ const validateExistentAdminOrFail = async () => {
 	return existentAdmin
 }
 
-const validateAdminOrFail = async (isAdmin) => {
+const validateAdminOrFail = (isAdmin) => {
 	if (!isAdmin) throw new ForbiddenAdminError()
 }
 
@@ -134,6 +206,15 @@ const validateUserByIdOrFail = async (userId) => {
 	return user
 }
 
+const validateAdminDeleteOrFail = (isAdmin, userId) => {
+	if (isAdmin) throw new ForbiddenAdminDeleteError(userId)
+}
+
+const validateUserActionOrFail = async (requestedUserId, givenUserId) => {
+	const isSameUser = Boolean(requestedUserId === givenUserId)
+	if (!isSameUser) throw new ForbiddenUserAction(givenUserId)
+}
+
 
 export {
 	createAdmin,
@@ -141,4 +222,8 @@ export {
 	authorizeUser,
 	validateUserByIdOrFail,
 	validateAdminOrFail,
+	findUsersAndPermissions,
+	findUser,
+	removeUser,
+	updateUser,
 }

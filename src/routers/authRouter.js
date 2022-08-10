@@ -19,11 +19,13 @@ authRouter.post(
 )
 
 authRouter.use(authMiddleware)
+
 authRouter.post(
 	'/sign-up',
 	permissionMiddleware('addUsers'),
 	schemaValidation.bodyMiddleware(userSchema),
 	authController.signUpUser,
 )
+
 
 export default authRouter

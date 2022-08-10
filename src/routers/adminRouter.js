@@ -21,6 +21,7 @@ adminRouter.post(
 )
 
 adminRouter.use(authMiddleware)
+
 adminRouter.post(
 	'/enterprise',
 	schemaValidation.bodyMiddleware(enterpriseSchema),
