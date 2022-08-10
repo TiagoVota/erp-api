@@ -52,6 +52,26 @@ const editUser = async (req, res, next) => {
 }
 
 
+const editUserByAdmin = async (req, res, next) => {
+	const userId = Number(req.params.userId)
+	const userData = req.body
+	const requestUser = res.locals.user
+
+	try {
+		const editedUser = await userService.updateUserByAdmin({
+			userId,
+			userData,
+			requestUser,
+		})
+
+		return res.status(StatusCodes.OK).send(editedUser)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 const deleteUser = async (req, res, next) => {
 	const userId = Number(req.params.userId)
 
@@ -70,5 +90,6 @@ export {
 	getUsersAndPermissions,
 	getUser,
 	editUser,
+	editUserByAdmin,
 	deleteUser,
 }
