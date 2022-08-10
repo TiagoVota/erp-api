@@ -5,12 +5,15 @@ import app from '../../src/app.js'
 
 import { disconnectServer, cleanDb } from '../factories/dbFactory.js'
 import { generateValidToken } from '../factories/tokenFactory.js'
-import { createUserPermissions } from '../factories/permissionFactory.js'
-import { createUser } from '../factories/userFactory.js'
+import {
+	createUserPermissions,
+	findPermissionByUserId,
+} from '../factories/permissionFactory.js'
+import { createUser, findUserById } from '../factories/userFactory.js'
 import { generateId } from '../factories/idFactory.js'
 
 
-describe('get /users', () => {
+describe('GET /users', () => {
 	beforeEach(cleanDb)
 
 	it('should return UNAUTHORIZED when no token is given', async () => {
@@ -34,7 +37,7 @@ describe('get /users', () => {
 		expect(response.status).toEqual(StatusCodes.FORBIDDEN)
 	})
 
-	it('should return UNPROCESSABLE ENTITY invalid query params', async () => {
+	it('should return UNPROCESSABLE ENTITY for invalid query params', async () => {
 		const allowedUser = await createUser()
 		await createUserPermissions(allowedUser.id, 'seeUsers')
 		const invalidLimit = 'invalid limit'
@@ -131,6 +134,90 @@ describe('GET /users/:userId', () => {
 			.set('Authorization', `Bearer ${token}`)
 
 		expect(response.body).not.toHaveProperty('permissions')
+	})
+})
+
+describe('DELETE /users/:userId', () => {
+	beforeEach(cleanDb)
+
+	it('should return UNAUTHORIZED when no token is given', async () => {
+		const userId = generateId()
+
+		const response = await supertest(app)
+			.delete(`/users/${userId}`)
+			.set('Authorization', `Bearer ${undefined}`)
+
+		expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+	})
+
+	it('should return FORBIDDEN when not allowed user make the request given', async () => {
+		const userId = generateId()
+		const notAllowedUser = await createUser()
+		await createUserPermissions(notAllowedUser.id)
+
+		const token = await generateValidToken({ defaultUser: notAllowedUser })
+
+		const response = await supertest(app)
+			.delete(`/users/${userId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid params', async () => {
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'deleteUsers')
+		const invalidUserId = 'invalid userId'
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.delete(`/users/${invalidUserId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return OK when delete user', async () => {
+		const createUserPromise = [createUser(), createUser()]
+		const [ allowedUser, userToDelete ] = await Promise.all(createUserPromise)
+		await createUserPermissions(allowedUser.id, 'deleteUsers')
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.delete(`/users/${userToDelete.id}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.OK)
+	})
+
+	it('should delete user and permissions from database', async () => {
+		const createUserPromise = [createUser(), createUser()]
+		const [ allowedUser, userToDelete ] = await Promise.all(createUserPromise)
+		const createPermissionPromise = [
+			createUserPermissions(allowedUser.id, 'deleteUsers'),
+			createUser(userToDelete.id),
+		]
+		await Promise.all(createPermissionPromise)
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		await supertest(app)
+			.delete(`/users/${userToDelete.id}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		const checkDeletePromises = [
+			findUserById(userToDelete.id),
+			findPermissionByUserId(userToDelete.id),
+		]
+		const [
+			deletedUser,
+			deletedPermission,
+		] = await Promise.all(checkDeletePromises)
+
+		expect(deletedUser).toBeNull()
+		expect(deletedPermission).toBeNull()
 	})
 })
 
