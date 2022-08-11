@@ -8,6 +8,7 @@ import { generateValidToken } from '../factories/tokenFactory.js'
 import {
 	createUserPermissions,
 	findPermissionByUserId,
+	makePermissionsOptions,
 } from '../factories/permissionFactory.js'
 import { createUser, findUserById, makeUpdateUserBody } from '../factories/userFactory.js'
 import { generateId } from '../factories/idFactory.js'
@@ -290,6 +291,108 @@ describe('PUT /users/:userId', () => {
 		const updatedUser = await findUserById(user.id)
 
 		expect(updatedUser.email).toEqual(toInsertEmail)
+	})
+})
+
+describe('PUT /users/permissions/:userId', () => {
+	beforeEach(cleanDb)
+
+	it('should return UNAUTHORIZED when no token is given', async () => {
+		const userId = generateId()
+
+		const response = await supertest(app)
+			.put(`/users/permissions/${userId}`)
+			.set('Authorization', `Bearer ${undefined}`)
+
+		expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+	})
+
+	it('should return FORBIDDEN when not allowed user make the request given', async () => {
+		const userId = generateId()
+		const notAllowedUser = await createUser()
+		await createUserPermissions(notAllowedUser.id)
+
+		const token = await generateValidToken({ defaultUser: notAllowedUser })
+
+		const response = await supertest(app)
+			.put(`/users/permissions/${userId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid params', async () => {
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'editPermissions')
+		const invalidUserId = 'invalid userId'
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.put(`/users/permissions/${invalidUserId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid body', async () => {
+		const createUserPromises = [ createUser(), createUser() ]
+		const [ toUpdateUser, allowedUser ] = await Promise.all(createUserPromises)
+		await createUserPermissions(allowedUser.id, 'editPermissions')
+		const invalidBody = makePermissionsOptions()
+		delete invalidBody.addUsers
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.put(`/users/permissions/${toUpdateUser.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(invalidBody)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return OK when update user permissions', async () => {
+		const createUserPromises = [ createUser(), createUser() ]
+		const [ toUpdateUser, allowedUser ] = await Promise.all(createUserPromises)
+		const createPermissionsPromises = [
+			createUserPermissions(toUpdateUser.id),
+			createUserPermissions(allowedUser.id, 'editPermissions'),
+		]
+		await Promise.all(createPermissionsPromises)
+		const body = makePermissionsOptions()
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.put(`/users/permissions/${toUpdateUser.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+
+		expect(response.status).toEqual(StatusCodes.OK)
+	})
+
+	it('should update user permissions in database', async () => {
+		const createUserPromises = [ createUser(), createUser() ]
+		const [ toUpdateUser, allowedUser ] = await Promise.all(createUserPromises)
+		const createPermissionsPromises = [
+			createUserPermissions(toUpdateUser.id),
+			createUserPermissions(allowedUser.id, 'editPermissions'),
+		]
+		await Promise.all(createPermissionsPromises)
+		const body = makePermissionsOptions()
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		await supertest(app)
+			.put(`/users/permissions/${toUpdateUser.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+
+		const updatedPermissions = await findPermissionByUserId(toUpdateUser.id)
+
+		expect(updatedPermissions).not.toBeNull()
+		expect(updatedPermissions['addUsers']).toEqual(body['addUsers'])
 	})
 })
 

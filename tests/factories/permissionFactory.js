@@ -1,6 +1,16 @@
 import prisma from '../../src/database/database'
 
 
+const makePermissionsOptions = (defaultOptions) => {
+	return {
+		seeUsers: defaultOptions?.seeUsers || true,
+		addUsers: defaultOptions?.addUsers || true,
+		deleteUsers: defaultOptions?.deleteUsers || true,
+		editPermissions: defaultOptions?.editPermissions || true,
+	}
+}
+
+
 const findPermissionByUserId = async (userId) => {
 	const user = await prisma.permission.findUnique({
 		where: {
@@ -28,6 +38,7 @@ const createUserPermissions = async (userId, ...permissionNames) => {
 
 
 export {
+	makePermissionsOptions,
 	findPermissionByUserId,
 	createUserPermissions,
 }
