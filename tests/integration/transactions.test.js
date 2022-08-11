@@ -11,7 +11,9 @@ import {
 	createTransaction,
 	findTransactionById,
 	makeTransactionBody,
+	makeUpdateTransactionBody,
 } from '../factories/transactionFactory.js'
+import { generateId } from '../factories/idFactory.js'
 
 
 describe('GET /transactions', () => {
@@ -183,6 +185,100 @@ describe('POST /transactions', () => {
 
 		expect(createdTransaction).not.toBeNull()
 		expect(createdTransaction.value).toEqual(body.value)
+	})
+})
+
+describe('PUT /transactions/:transactionId', () => {
+	beforeEach(cleanDb)
+
+	it('should return UNAUTHORIZED when no token is given', async () => {
+		const transactionId = generateId()
+
+		const response = await supertest(app)
+			.put(`/transactions/${transactionId}`)
+			.set('Authorization', `Bearer ${undefined}`)
+
+		expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+	})
+
+	it('should return FORBIDDEN when not allowed user make the request given', async () => {
+		const transactionId = generateId()
+		const notAllowedUser = await createUser()
+		await createUserPermissions(notAllowedUser.id)
+
+		const token = await generateValidToken({ defaultUser: notAllowedUser })
+
+		const response = await supertest(app)
+			.put(`/transactions/${transactionId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid params', async () => {
+		const invalidTransactionId = 'invalid transactionId'
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'editTransactions')
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.put(`/transactions/${invalidTransactionId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid body', async () => {
+		const transactionId = generateId()
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'editTransactions')
+		const invalidBody = makeUpdateTransactionBody()
+		delete invalidBody.value
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.put(`/transactions/${transactionId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(invalidBody)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return OK when update transaction', async () => {
+		const transaction = await createTransaction()
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'editTransactions')
+		const body = makeUpdateTransactionBody()
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.put(`/transactions/${transaction.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+
+		expect(response.status).toEqual(StatusCodes.OK)
+	})
+
+	it('should update transaction in database', async () => {
+		const transaction = await createTransaction()
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'editTransactions')
+		const body = makeUpdateTransactionBody()
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		await supertest(app)
+			.put(`/transactions/${transaction.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+
+		const updatedTransaction = await findTransactionById(transaction.id)
+
+		expect(updatedTransaction).not.toBeNull()
+		expect(updatedTransaction.value).toEqual(body.value)
 	})
 })
 
