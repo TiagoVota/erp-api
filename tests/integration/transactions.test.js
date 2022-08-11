@@ -282,6 +282,82 @@ describe('PUT /transactions/:transactionId', () => {
 	})
 })
 
+describe('DELETE /transactions/:transactionId', () => {
+	beforeEach(cleanDb)
+
+	it('should return UNAUTHORIZED when no token is given', async () => {
+		const transactionId = generateId()
+
+		const response = await supertest(app)
+			.delete(`/transactions/${transactionId}`)
+			.set('Authorization', `Bearer ${undefined}`)
+
+		expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+	})
+
+	it('should return FORBIDDEN when not allowed user make the request given', async () => {
+		const transactionId = generateId()
+		const notAllowedUser = await createUser()
+		await createUserPermissions(notAllowedUser.id)
+
+		const token = await generateValidToken({ defaultUser: notAllowedUser })
+
+		const response = await supertest(app)
+			.delete(`/transactions/${transactionId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+	})
+
+	it('should return UNPROCESSABLE ENTITY for invalid params', async () => {
+		const invalidTransactionId = 'invalid transactionId'
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'deleteTransactions')
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.delete(`/transactions/${invalidTransactionId}`)
+			.set('Authorization', `Bearer ${token}`)
+
+		expect(response.status).toEqual(StatusCodes.UNPROCESSABLE_ENTITY)
+	})
+
+	it('should return OK when delete transaction', async () => {
+		const transaction = await createTransaction()
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'deleteTransactions')
+		const body = makeUpdateTransactionBody()
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		const response = await supertest(app)
+			.delete(`/transactions/${transaction.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+
+		expect(response.status).toEqual(StatusCodes.OK)
+	})
+
+	it('should update transaction in database', async () => {
+		const transaction = await createTransaction()
+		const allowedUser = await createUser()
+		await createUserPermissions(allowedUser.id, 'deleteTransactions')
+		const body = makeUpdateTransactionBody()
+
+		const token = await generateValidToken({ defaultUser: allowedUser })
+
+		await supertest(app)
+			.delete(`/transactions/${transaction.id}`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(body)
+
+		const deletedTransaction = await findTransactionById(transaction.id)
+
+		expect(deletedTransaction).toBeNull()
+	})
+})
+
 
 afterAll(async () => {
 	await cleanDb()
