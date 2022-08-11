@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker'
 import prisma from '../../src/database/database'
 import { makeValidDate } from './dateFactory'
 import { generateId } from './idFactory'
+import { createUser } from './userFactory'
 
 
 const makeTransactionBody = (defaultBody={}) => {
@@ -42,7 +43,16 @@ const findTransactionById = async (id) => {
 }
 
 
-const createTransaction = async (defaultBody) => {
+const createTransaction = async (defaultBody={}) => {
+	const { payerId, payeeId } = defaultBody
+	if (!payerId) {
+		const payer = await createUser()
+		defaultBody.payerId = payer.id
+	}
+	if (!payeeId) {
+		const payee = await createUser({ isAdmin: true })
+		defaultBody.payeeId = payee.id
+	}
 	const transactionData = makeTransactionBody(defaultBody)
 
 	const user = await prisma.transaction.create({
