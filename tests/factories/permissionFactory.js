@@ -7,6 +7,10 @@ const makePermissionsOptions = (defaultOptions) => {
 		addUsers: defaultOptions?.addUsers || true,
 		deleteUsers: defaultOptions?.deleteUsers || true,
 		editPermissions: defaultOptions?.editPermissions || true,
+		seeTransactions: defaultOptions?.seeTransactions || true,
+		addTransactions: defaultOptions?.addTransactions || true,
+		editTransactions: defaultOptions?.editTransactions || true,
+		deleteTransactions: defaultOptions?.deleteTransactions || true,
 	}
 }
 

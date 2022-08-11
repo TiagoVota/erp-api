@@ -4,6 +4,10 @@ const makeAdminPermissions = () => {
 		addUsers: true,
 		deleteUsers: true,
 		editPermissions: true,
+		seeTransactions: true,
+		addTransactions: true,
+		editTransactions: true,
+		deleteTransactions: true,
 	}
 }
 
