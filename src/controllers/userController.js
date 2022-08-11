@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { userService } from '../services/index.js'
+import { permissionService, userService } from '../services/index.js'
 
 
 const getUsersAndPermissions = async (req, res, next) => {
@@ -72,6 +72,24 @@ const editUserByAdmin = async (req, res, next) => {
 }
 
 
+const editUserPermissions = async (req, res, next) => {
+	const userId = Number(req.params.userId)
+	const permissionsData = req.body
+
+	try {
+		const editedPermissions = await permissionService.updateUserPermissions({
+			userId,
+			permissionsData,
+		})
+
+		return res.status(StatusCodes.OK).send(editedPermissions)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 const deleteUser = async (req, res, next) => {
 	const userId = Number(req.params.userId)
 
@@ -91,5 +109,6 @@ export {
 	getUser,
 	editUser,
 	editUserByAdmin,
+	editUserPermissions,
 	deleteUser,
 }

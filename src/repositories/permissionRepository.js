@@ -24,9 +24,22 @@ const findByUserId = async (userId) => {
 }
 
 
+const updateByUserId = async ({ userId, data }) => {
+	const permissions = await prisma.permission.update({
+		where: {
+			userId,
+		},
+		data,
+	})
+
+	return permissions
+}
+
+
 const permissionRepository = {
 	insert,
 	findByUserId,
+	updateByUserId,
 }
 export {
 	permissionRepository
