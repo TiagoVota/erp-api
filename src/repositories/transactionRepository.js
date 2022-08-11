@@ -1,6 +1,17 @@
 import prisma from '../database/database.js'
 
 
+const findById = async (id) => {
+	const transaction = await prisma.transaction.findUnique({
+		where: {
+			id,
+		},
+	})
+
+	return transaction
+}
+
+
 const findMany = async ({ take, skip, includeUserData }) => {
 	const include = includeUserData
 		? {
@@ -30,9 +41,35 @@ const insert = async (data) => {
 }
 
 
+const updateById = async ({ id, data }) => {
+	const transaction = await prisma.transaction.update({
+		where: {
+			id,
+		},
+		data,
+	})
+
+	return transaction
+}
+
+
+const deleteById = async (id) => {
+	const transaction = await prisma.transaction.delete({
+		where: {
+			id,
+		},
+	})
+
+	return transaction
+}
+
+
 const transactionRepository = {
+	findById,
 	findMany,
 	insert,
+	updateById,
+	deleteById,
 }
 export {
 	transactionRepository

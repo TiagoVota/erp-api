@@ -6,10 +6,14 @@ import { userRepository } from '../../../src/repositories/index.js'
 
 import { clearMocks } from '../../factories/jestUtilsFactory.js'
 import { generateId } from '../../factories/idFactory.js'
-import { makePermissionsOptions } from '../../factories/permissionFactory.js'
-
-import { ConflictSameUserTransactionError, ForbiddenNoAdminTransactionError, NoUserByIdError, UnprocessableDateError } from '../../../src/errors/index.js'
 import { makeTransactionBody } from '../../factories/transactionFactory.js'
+
+import {
+	ConflictSameUserTransactionError,
+	ForbiddenNoAdminTransactionError,
+	NoUserByIdError,
+	UnprocessableDateError,
+} from '../../../src/errors/index.js'
 
 
 const sut = transactionService

@@ -8,6 +8,7 @@ import { formatTransactionsData } from './helpers/formatTransactionHelper.js'
 import {
 	ConflictSameUserTransactionError,
 	ForbiddenNoAdminTransactionError,
+	NoTransactionByIdError,
 	UnprocessableDateError,
 } from '../errors/index.js'
 
@@ -49,11 +50,34 @@ const createTransaction = async (createTransactionBody) => {
 }
 
 
-const formatTransactionBodyOrFail = (createTransactionBody) => {
-	const { writeOffDate, createdAt } = createTransactionBody
+const updateTransaction = async ({ transactionData, transactionId }) => {
+	const formattedBody = formatTransactionBodyOrFail(transactionData)
+
+	await validateTransactionByIdOrFail(transactionId)
+
+	const transaction = await transactionRepository.updateById({
+		id: transactionId,
+		data: formattedBody,
+	})
+
+	return transaction
+}
+
+
+const deleteTransaction = async ({ transactionId }) => {
+	await validateTransactionByIdOrFail(transactionId)
+
+	const transaction = await transactionRepository.deleteById(transactionId)
+
+	return transaction
+}
+
+
+const formatTransactionBodyOrFail = (transactionBody) => {
+	const { writeOffDate, createdAt } = transactionBody
 
 	const formattedBody = {
-		...createTransactionBody,
+		...transactionBody,
 	}
 
 	if (writeOffDate) {
@@ -84,8 +108,17 @@ const validateTransactionPrecedenceOrFail = (payer, payee) => {
 	if (!haveAtLeastOneAdmin) throw new ForbiddenNoAdminTransactionError()
 }
 
+const validateTransactionByIdOrFail = async (transactionId) => {
+	const transaction = await transactionRepository.findById(transactionId)
+	if (!transaction) throw new NoTransactionByIdError(transactionId)
+
+	return transaction
+}
+
 
 export {
 	findTransactions,
 	createTransaction,
+	updateTransaction,
+	deleteTransaction,
 }
