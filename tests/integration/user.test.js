@@ -10,7 +10,11 @@ import {
 	findPermissionByUserId,
 	makePermissionsOptions,
 } from '../factories/permissionFactory.js'
-import { createUser, findUserById, makeUpdateUserBody } from '../factories/userFactory.js'
+import {
+	createUser,
+	findUserById,
+	makeUpdateUserBody,
+} from '../factories/userFactory.js'
 import { generateId } from '../factories/idFactory.js'
 
 
