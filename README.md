@@ -2,6 +2,8 @@
 ## 🚀 Descrição do Projeto
 Está cansado de ter pilhas de papel para organizar sua empresa? Então temos a solução perfeita para você! Utilize a ERP API e desfrute da praticidade e facilidade na hora de gerenciar seus funcionários, clientes e transações!!!
 
+Corra agora mesmo para checar nossa API em: https://erp-tvc.herokuapp.com/
+
 
 <br/>
 
@@ -112,6 +114,7 @@ Na pasta principal da API, crie um arquivo `.env.dev` aos mesmos moldes do arqui
 npm run seed
 ```
 Caso queira ver, a população da database será feita através [desse script](https://github.com/TiagoVota/erp-api/blob/main/prisma/seed/seed.js). Além disso, a estrutura do nosso banco de dados pode ser vista através [desse arquivo](https://github.com/TiagoVota/erp-api/blob/main/prisma/schema.prisma)!
+Obs.: Por padrão a seed criará um admin com e-mail `admin@admin.com` e senha `admin`. Além disso será criado o evento e alguns usuários, agora é só fazer requisições de forma tranquila e prática!
 
 
 ### Inicializando a API
