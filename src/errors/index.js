@@ -14,6 +14,7 @@ import NoEnterpriseAdminError from './NoEnterpriseAdminError.js'
 import NoEnterpriseError from './NoEnterpriseError.js'
 import NoUserByIdError from './NoUserByIdError.js'
 import NoUserError from './NoUserError.js'
+import NoTransactionByIdError from './NoTransactionByIdError.js'
 import SchemaError from './SchemaError.js'
 import ForbiddenAdminDeleteError from './ForbiddenAdminDeleteError.js'
 import ForbiddenAdminError from './ForbiddenAdminError.js'
@@ -41,6 +42,7 @@ export {
 	NoEnterpriseError,
 	NoUserByIdError,
 	NoUserError,
+	NoTransactionByIdError,
 	SchemaError,
 	UnprocessableCnpjError,
 	UnprocessableCpfError,

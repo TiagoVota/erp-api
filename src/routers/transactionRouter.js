@@ -10,6 +10,7 @@ import { transactionController } from '../controllers/index.js'
 import {
 	transactionSchema,
 	transactionsQuerySchema,
+	transactionUpdateSchema,
 } from '../schemas/transactionSchema.js'
 
 
@@ -29,6 +30,13 @@ transactionRouter.post(
 	permissionMiddleware('addTransactions'),
 	schemaValidation.bodyMiddleware(transactionSchema),
 	transactionController.addTransaction,
+)
+
+transactionRouter.put(
+	'/:transactionId',
+	permissionMiddleware('editTransactions'),
+	schemaValidation.bodyMiddleware(transactionUpdateSchema),
+	transactionController.editTransaction,
 )
 
 
