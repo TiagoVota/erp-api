@@ -26,7 +26,7 @@ const editUserByAdminSchema = Joi.object({
 }).length(3)
 
 const usersQuerySchema = Joi.object({
-	limit: Joi.number().min(0).max(1000),
+	limit: Joi.number().min(1).max(1000),
 	offset: Joi.number().min(0),
 })
 

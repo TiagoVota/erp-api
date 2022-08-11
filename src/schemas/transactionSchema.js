@@ -13,7 +13,13 @@ const transactionSchema = Joi.object({
 	createdAt: Joi.date(),
 }).min(3).max(6)
 
+const transactionsQuerySchema = Joi.object({
+	limit: Joi.number().min(1).max(1000),
+	offset: Joi.number().min(0),
+})
+
 
 export {
 	transactionSchema,
+	transactionsQuerySchema,
 }

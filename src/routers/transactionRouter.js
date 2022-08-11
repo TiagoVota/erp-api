@@ -7,12 +7,22 @@ import * as schemaValidation from '../middlewares/schemaValidation/index.js'
 
 import { transactionController } from '../controllers/index.js'
 
-import { transactionSchema } from '../schemas/transactionSchema.js'
+import {
+	transactionSchema,
+	transactionsQuerySchema,
+} from '../schemas/transactionSchema.js'
 
 
 const transactionRouter = Router()
 
 transactionRouter.use(authMiddleware)
+
+transactionRouter.get(
+	'',
+	permissionMiddleware('seeTransactions'),
+	schemaValidation.queryMiddleware(transactionsQuerySchema),
+	transactionController.getTransactions,
+)
 
 transactionRouter.post(
 	'',

@@ -1,12 +1,12 @@
 const formatUserData = (user) => {
-	const formatUserData = { ...user }
-	delete formatUserData.password
+	const formattedUserData = { ...user }
+	delete formattedUserData.password
 
-	return formatUserData
+	return formattedUserData
 }
 
 const formatUsersData = (userList) => {
-	const formattedUserList = userList.map(user => formatUserData(user))
+	const formattedUserList = userList.map(formatUserData)
 
 	return formattedUserList
 }

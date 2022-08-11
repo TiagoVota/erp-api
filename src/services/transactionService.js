@@ -3,12 +3,36 @@ import { transactionRepository } from '../repositories/index.js'
 import { userService } from './index.js'
 
 import { formatDate } from '../utils/dates.js'
+import { formatTransactionsData } from './helpers/formatTransactionHelper.js'
 
 import {
 	ConflictSameUserTransactionError,
 	ForbiddenNoAdminTransactionError,
 	UnprocessableDateError,
 } from '../errors/index.js'
+
+
+const findTransactions = async ({ requestUser, query }) => {
+	const canSeeUsers = requestUser.permissions.seeUsers
+
+	const DEFAULT_LIMIT = 100
+	const DEFAULT_OFFSET = 0
+	
+	const limit = Number(query?.limit) || DEFAULT_LIMIT
+	const offset = Number(query?.offset) || DEFAULT_OFFSET
+
+	const transactions = await transactionRepository.findMany({
+		take: limit,
+		skip: offset * limit,
+		includeUserData: canSeeUsers,
+	})
+
+	const formattedTransactions = Boolean(canSeeUsers)
+		? formatTransactionsData(transactions)
+		: transactions
+
+	return formattedTransactions
+}
 
 
 const createTransaction = async (createTransactionBody) => {
@@ -62,5 +86,6 @@ const validateTransactionPrecedenceOrFail = (payer, payee) => {
 
 
 export {
+	findTransactions,
 	createTransaction,
 }
