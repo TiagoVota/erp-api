@@ -54,8 +54,25 @@ const editTransaction = async (req, res, next) => {
 }
 
 
+const removeTransaction = async (req, res, next) => {
+	const transactionId = Number(req.params.transactionId)
+
+	try {
+		const deletedTransaction = await transactionService.deleteTransaction({
+			transactionId,
+		})
+
+		return res.status(StatusCodes.OK).send(deletedTransaction)
+
+	} catch (error) {
+		next(error)
+	}
+}
+
+
 export {
 	getTransactions,
 	addTransaction,
 	editTransaction,
+	removeTransaction,
 }

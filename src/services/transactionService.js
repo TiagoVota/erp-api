@@ -64,6 +64,15 @@ const updateTransaction = async ({ transactionData, transactionId }) => {
 }
 
 
+const deleteTransaction = async ({ transactionId }) => {
+	await validateTransactionByIdOrFail(transactionId)
+
+	const transaction = await transactionRepository.deleteById(transactionId)
+
+	return transaction
+}
+
+
 const formatTransactionBodyOrFail = (transactionBody) => {
 	const { writeOffDate, createdAt } = transactionBody
 
@@ -111,4 +120,5 @@ export {
 	findTransactions,
 	createTransaction,
 	updateTransaction,
+	deleteTransaction,
 }
