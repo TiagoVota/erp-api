@@ -23,32 +23,35 @@ model Enterprise {
   cnpj          String   @unique @db.VarChar(14)
   corporateName String   @db.VarChar(80)
   tradingName   String   @db.VarChar(80)
-  admin         User     @relation(fields: [adminId], references: [id])
   adminId       Int      @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  admin User @relation(fields: [adminId], references: [id])
 
   @@map("enterprises")
 }
 
 model User {
-  id          Int          @id @default(autoincrement())
-  cpf         String       @unique @db.VarChar(11)
-  name        String       @db.VarChar(80)
-  email       String       @unique @db.VarChar(80)
-  password    String       @db.VarChar(80)
-  isAdmin     Boolean      @default(false)
+  id        Int      @id @default(autoincrement())
+  cpf       String   @unique @db.VarChar(11)
+  name      String   @db.VarChar(80)
+  email     String   @unique @db.VarChar(80)
+  password  String   @db.VarChar(80)
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   enterprises Enterprise[]
   permissions Permission[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  payers      Transaction[] @relation(name: "payer")
+  payees      Transaction[] @relation(name: "payee")
 
   @@map("users")
 }
 
 model Permission {
   id              Int      @id @default(autoincrement())
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          Int      @unique
   seeUsers        Boolean  @default(false)
   addUsers        Boolean  @default(false)
@@ -57,5 +60,23 @@ model Permission {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("permissions")
+}
+
+model Transaction {
+  id           Int       @id @default(autoincrement())
+  value        Int
+  payerId      Int
+  payeeId      Int       @unique
+  description  String?   @db.VarChar(255)
+  writeOffDate DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  payer User @relation(name: "payer", fields: [payerId], references: [id], onDelete: Cascade)
+  payee User @relation(name: "payee", fields: [payeeId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
 }
