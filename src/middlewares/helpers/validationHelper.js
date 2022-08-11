@@ -12,7 +12,10 @@ const sanitizeInput = (obj) => {
 const sanitizeStr = (str) => stripHtml(str).result.trim()
 
 const isSanitizableValue = (value) => {
-	return typeof value !== 'number'
+	const invalidTypes = ['number', 'boolean']
+	const valueType = typeof(value)
+
+	return !invalidTypes.includes(valueType)
 }
 
 
