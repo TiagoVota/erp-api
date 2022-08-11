@@ -31,7 +31,7 @@ const usersQuerySchema = Joi.object({
 })
 
 const userParamsSchema = Joi.object({
-	userId: Joi.number().min(1).required(),
+	userId: Joi.number().integer().min(1).required(),
 }).length(1)
 
 

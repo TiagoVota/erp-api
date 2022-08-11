@@ -73,7 +73,7 @@ model Transaction {
   id           Int       @id @default(autoincrement())
   value        Int
   payerId      Int
-  payeeId      Int       @unique
+  payeeId      Int
   description  String?   @db.VarChar(255)
   writeOffDate DateTime?
   createdAt    DateTime  @default(now())
